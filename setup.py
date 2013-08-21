@@ -10,7 +10,7 @@ setup(
     url='http://pypi.python.org/pypi/Tavi/',
     license='LICENSE.txt',
     description='Super thin Object Document Mapper for MongoDB.',
-    long_description=open('README').read(),
+    long_description=open('README.rst').read(),
     install_requires=[
         "inflection >= 0.2.0",
         "pymongo >= 2.5.2"
