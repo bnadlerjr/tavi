@@ -73,9 +73,13 @@ Use GitHub [issues](https://github.com/bnadlerjr/tavi/issues) for reporting bugs
 
 ### Connecting to MongoDB
 
-### Defining Document Objects
+### Defining Documents
 
-Document objects inherit from tavi.documentDocument which provides both field support and persistence. You define a document like this:
+Documents are the building blocks for defining your models. An instantiated [```tavi.document.Document```](#documents) class represents a single document in a MongoDB collection. It also provides a number of class methods used for querying the collection itself. You can embed documents inside other documents (rather than in their own collections) using the [```tavi.document.EmbeddedDocument```](#embedded-documents) class.
+
+### <a id="documents"></a>Documents
+
+Document objects inherit from ```tavi.document.Document```. You can [persist](#saving-documents) them to collections and they can contain embedded documents. They also come with support for [validations](#validations) and [querying](#finding-documents).
 
 ```python
 class Order(tavi.document.Document):
@@ -85,11 +89,9 @@ class Order(tavi.document.Document):
     pay_type = tavi.fields.StringField("pay_type", required=True)
 ```
 
-Any ``Order`` classes that are instantiated will have ``name``, ``address``, ``email``, and ``pay_type`` attributes. See [validations](#validations) for how to determine of the objects attributes are valid. Document objects also support persistence methods (see [saving](#saving-documents) and [finding](#finding-documents)).
+### <a id="embedded-documents"></a>Embedded Documents
 
-### Defining Embedded Document Objects
-
-Embedded Document objects inherit from tavi.document.EmbeddedDocument and only have support for fields. Embedded Documents are defined the same way as Documents and support [validations](#validations).
+Embedded documents are almost identical to Documents with one exception: they are saved inside of another document instead of in their own collection. They inherit from ```tavi.document.EmbeddedDocument``` and have support for [validations](#validations).
 
 ```python
 class Address(tavi.document.EmbeddedDocument):
