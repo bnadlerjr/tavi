@@ -2,6 +2,8 @@ import unittest
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.database import Database
+from tavi.connection import Connection
+from tavi.errors import TaffyConnectionError
 from tavi.document import EmbeddedDocument, Document
 from tavi import fields
 

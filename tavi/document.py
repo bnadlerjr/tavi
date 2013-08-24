@@ -3,6 +3,7 @@ from bson.objectid import ObjectId
 from tavi.base.document import BaseDocument
 from tavi.base.document import BaseDocumentMetaClass
 from tavi.connection import Connection
+from tavi.errors import TaffyConnectionError
 import inflection
 
 class DocumentMetaClass(BaseDocumentMetaClass):
@@ -15,13 +16,15 @@ class DocumentMetaClass(BaseDocumentMetaClass):
     def __init__(cls, name, bases, attrs):
         super(DocumentMetaClass, cls).__init__(name, bases, attrs)
         cls._collection_name = inflection.underscore(inflection.pluralize(name))
-        database = Connection("test_database").database()
-        cls._collection = database[cls._collection_name]
 
     @property
     def collection(cls):
         """Returns a handle to the Document collection."""
-        return cls._collection
+        if not Connection.database:
+            raise TaffyConnectionError(
+                "Cannot connect to MongoDB. Did you call "
+                "'tavi.connection.Connection.setup'?")
+        return Connection.database[cls._collection_name]
 
     @property
     def collection_name(cls):
@@ -46,7 +49,7 @@ class Document(BaseDocument):
 
     def delete(self):
         """Removes the Document from the collection."""
-        self.__class__.__dict__["_collection"].remove({ "_id": self._id })
+        self.__class__.collection.remove({ "_id": self._id })
 
     @classmethod
     def find(cls, *args, **kwargs):
@@ -54,7 +57,7 @@ class Document(BaseDocument):
         pymongo's *find* method and supports all of the same arguments.
 
         """
-        results = cls.__dict__["_collection"].find(*args, **kwargs)
+        results = cls.collection.find(*args, **kwargs)
         return [cls(**result) for result in results]
 
     @classmethod
@@ -76,8 +79,7 @@ class Document(BaseDocument):
         method and supports all of the same arguments.
 
         """
-        result = cls.__dict__["_collection"].find_one(
-            spec_or_id, *args, **kwargs)
+        result = cls.collection.find_one(spec_or_id, *args, **kwargs)
         return cls(**result)
 
     def save(self):
@@ -90,7 +92,7 @@ class Document(BaseDocument):
         if not self.valid:
             return False
 
-        collection = self.__class__.__dict__["_collection"]
+        collection = self.__class__.collection
         if self.bson_id:
             collection.update({ "_id": self._id }, { "$set": self.data })
         else:

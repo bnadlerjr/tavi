@@ -5,10 +5,16 @@ from pymongo.database import Database
 class Connection(object):
     """Represents a MongoDB connection."""
 
-    def __init__(self, database_name):
-        """Initializes a new connection to the specified *database_name*"""
-        self._db_name = database_name
+    client   = None
+    database = None
 
-    def database(self):
-        """Reference to the database for this connection."""
-        return Database(MongoClient(), self._db_name)
+    @classmethod
+    def setup(cls, database_name, **kwargs):
+        """Sets ups the Mongo connection. *database_name* is the name of the
+        database to connect to. **kwargs** are the same options that can be
+        passed to *MongoClient*.
+
+        """
+        client = MongoClient(**kwargs)
+        cls.client = client
+        cls.database = Database(client, database_name)

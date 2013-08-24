@@ -3,10 +3,20 @@ from pymongo import MongoClient
 from tavi.connection import Connection
 
 class ConnectionTest(unittest.TestCase):
-    def test_get_database(self):
-        client = MongoClient()
-        client.drop_database("test_database")
-        db = client['test_database']
+    def setUp(self):
+        super(ConnectionTest, self).setUp()
+        self.client = MongoClient()
+        self.client.drop_database("test_database")
+        self.db = self.client['test_database']
 
-        cnn = Connection("test_database")
-        self.assertEqual(db, cnn.database())
+    def test_setup_with_host_and_port(self):
+        Connection.setup("test_database", host="localhost", port=27017)
+        self.assertEqual(self.db, Connection.database)
+
+    def test_setup_with_uri(self):
+        Connection.setup("test_database", host="mongodb://localhost:27017")
+        self.assertEqual(self.db, Connection.database)
+
+    def test_has_a_client_attribute(self):
+        Connection.setup("test_database", host="mongodb://localhost:27017")
+        self.assertEqual(self.client, Connection.client)

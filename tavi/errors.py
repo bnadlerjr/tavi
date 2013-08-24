@@ -13,6 +13,10 @@ class TaffyTypeError(TaffyError):
     """
     pass
 
+class TaffyConnectionError(TaffyError):
+    """Raised when Tavi cannot connect to Mongo."""
+    pass
+
 class Errors(object):
     """Provides a dictionary-like object that is used for handing error messages
     for fields.
