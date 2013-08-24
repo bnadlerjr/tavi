@@ -72,6 +72,25 @@ Use GitHub [issues](https://github.com/bnadlerjr/tavi/issues) for reporting bugs
 ## <a id="using-tavi"></a>Using Tavi
 
 ### Connecting to MongoDB
+MongoDB connections are handled by the `tavi.connection.Connection` class (which delegates to pymongo). Set up a connection like this:
+
+```python
+tavi.connection.Connection.setup("my_test_database", host="localhost", port=27017)
+```
+
+Alternatively, you can also use the MongoDB URI format:
+
+```python
+tavi.connection.Connection.setup("my_test_database", host="mongodb://localhost:27017/")
+```
+
+Once a connection has been established, you can grab a handle to the database directly, like this:
+
+```python
+tavi.connection.Connection.database
+```
+
+The database object that is returned is a [pymongo database](http://api.mongodb.org/python/current/api/pymongo/database.html) and supports all of its methods.
 
 ### Defining Documents
 
