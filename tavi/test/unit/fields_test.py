@@ -1,7 +1,7 @@
 import unittest
 from tavi import fields
 from tavi.document import Document, EmbeddedDocument
-from tavi.errors import TaffyTypeError, Errors
+from tavi.errors import TaviTypeError, Errors
 
 class FloatFieldTest(unittest.TestCase):
     def test_validates_is_float(self):
@@ -276,7 +276,7 @@ class EmbeddedFieldTest(unittest.TestCase):
         class Target(object):
             errors = Errors()
 
-        with self.assertRaises(TaffyTypeError) as exc:
+        with self.assertRaises(TaviTypeError) as exc:
             Target.f = fields.EmbeddedField("address", Address)
 
         expected_msg = (

@@ -2,18 +2,18 @@
 import inflection
 from tavi.utils import flatten
 
-class TaffyError(Exception):
-    """Base error for all Taffy errors."""
+class TaviError(Exception):
+    """Base error for all Tavi errors."""
     pass
 
-class TaffyTypeError(TaffyError):
+class TaviTypeError(TaviError):
     """Raised when an operation or function is applied to an object of
     inappropriate type.
 
     """
     pass
 
-class TaffyConnectionError(TaffyError):
+class TaviConnectionError(TaviError):
     """Raised when Tavi cannot connect to Mongo."""
     pass
 

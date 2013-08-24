@@ -2,7 +2,7 @@ import unittest
 from tavi import fields
 from tavi.document import Document, EmbeddedDocument
 from tavi.embedded_list import EmbeddedList
-from tavi.errors import TaffyTypeError
+from tavi.errors import TaviTypeError
 
 class EmbeddedListTest(unittest.TestCase):
     class Address(EmbeddedDocument):
@@ -26,7 +26,7 @@ class EmbeddedListTest(unittest.TestCase):
         self.assertIsNone(self.my_list.owner)
 
     def test_owner_must_be_a_document(self):
-        with self.assertRaises(TaffyTypeError) as exc:
+        with self.assertRaises(TaviTypeError) as exc:
             self.my_list.owner = "not a document"
 
         self.assertEqual(
@@ -51,7 +51,7 @@ class EmbeddedListTest(unittest.TestCase):
         self.assertEqual(self.address1.owner, self.my_list.owner)
 
     def test_can_only_add_embedded_documents(self):
-        with self.assertRaises(TaffyTypeError) as exc:
+        with self.assertRaises(TaviTypeError) as exc:
             self.my_list.append(1)
 
         msg = (

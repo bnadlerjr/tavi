@@ -2,7 +2,7 @@
 import collections
 from tavi.base.document import BaseDocument
 from tavi.document import EmbeddedDocument
-from tavi.errors import TaffyTypeError
+from tavi.errors import TaviTypeError
 
 class EmbeddedList(collections.MutableSequence):
     """A custom list for embedded documents. Ensures that only
@@ -40,12 +40,12 @@ class EmbeddedList(collections.MutableSequence):
 
     @owner.setter
     def owner(self, value):
-        """Sets the owner of the list. Raises a TaffyTypeError if *value* does
+        """Sets the owner of the list. Raises a TaviTypeError if *value* does
         not inherit from tavi.base.document.BaseDocument.
 
         """
         if not isinstance(value, BaseDocument):
-            raise TaffyTypeError(
+            raise TaviTypeError(
                 "owner must be of type or inherit from "
                 "tavi.base.document.BaseDocument"
             )
@@ -61,13 +61,13 @@ class EmbeddedList(collections.MutableSequence):
 
     def insert(self, index, value):
         """Adds *value* to list at *index*. Ensures that *value* is a
-        tavi.document.EmbeddedDocument and raises a TaffyTypeError if it is
+        tavi.document.EmbeddedDocument and raises a TaviTypeError if it is
         not. Checks that *value* is valid before being added. If *value* is not
         valid it adds the errors to the list owner.
 
         """
         if not isinstance(value, EmbeddedDocument):
-            raise TaffyTypeError(
+            raise TaviTypeError(
                 "tavi.EmbeddedList only accepts "
                 "tavi.document.EmbeddedDocument objects"
             )

@@ -3,7 +3,7 @@ from bson.objectid import ObjectId
 from tavi.base.document import BaseDocument
 from tavi.base.document import BaseDocumentMetaClass
 from tavi.connection import Connection
-from tavi.errors import TaffyConnectionError
+from tavi.errors import TaviConnectionError
 import inflection
 
 class DocumentMetaClass(BaseDocumentMetaClass):
@@ -21,7 +21,7 @@ class DocumentMetaClass(BaseDocumentMetaClass):
     def collection(cls):
         """Returns a handle to the Document collection."""
         if not Connection.database:
-            raise TaffyConnectionError(
+            raise TaviConnectionError(
                 "Cannot connect to MongoDB. Did you call "
                 "'tavi.connection.Connection.setup'?")
         return Connection.database[cls._collection_name]

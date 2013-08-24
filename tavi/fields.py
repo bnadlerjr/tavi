@@ -3,7 +3,7 @@ import re
 from tavi.embedded_list import EmbeddedList
 from tavi.base.field import BaseField
 from tavi.document import EmbeddedDocument
-from tavi.errors import TaffyTypeError
+from tavi.errors import TaviTypeError
 
 class FloatField(BaseField):
     """Represents a floating point number for a Mongo Document.
@@ -116,7 +116,7 @@ class StringField(BaseField):
             instance.errors.add(self.name, "is in the wrong format")
 
 class EmbeddedField(BaseField):
-    """Represents an embedded Mongo document. Raises a TaffyTypeError if *doc*
+    """Represents an embedded Mongo document. Raises a TaviTypeError if *doc*
     is not a tavi.document.EmbeddedDocument.
 
     """
@@ -124,7 +124,7 @@ class EmbeddedField(BaseField):
         super(EmbeddedField, self).__init__(name)
         doc_instance = doc()
         if not isinstance(doc_instance, EmbeddedDocument):
-            raise TaffyTypeError(
+            raise TaviTypeError(
                 "expected %s to be a subclass of "
                 "tavi.document.EmbeddedDocument" %
                 doc_instance.__class__
