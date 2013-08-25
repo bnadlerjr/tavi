@@ -112,6 +112,9 @@ class DocumentFindTest(unittest.TestCase):
         result = self.Sample.find_one(self.ids[0])
         self.assertEqual("John", result.first_name)
 
+    def test_find_one_does_not_find_any(self):
+        self.assertIsNone(self.Sample.find_one({"first_name": "No such name"}))
+
     def test_find_by_id_using_bson_id(self):
         result = self.Sample.find_by_id(self.ids[1])
         self.assertEqual("Joe", result.first_name)
@@ -129,3 +132,7 @@ class DocumentFindTest(unittest.TestCase):
     def test_find_all(self):
         result = self.Sample.find_all()
         self.assertEqual(3, len(result))
+
+    def test_find_all_when_collection_is_empty(self):
+        self.db.drop_collection("samples")
+        self.assertEqual([], self.Sample.find_all())

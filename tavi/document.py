@@ -80,7 +80,10 @@ class Document(BaseDocument):
 
         """
         result = cls.collection.find_one(spec_or_id, *args, **kwargs)
-        return cls(**result)
+        if result:
+            return cls(**result)
+        else:
+            return None
 
     def save(self):
         """Saves the Document by inserting it into the collection if it does
