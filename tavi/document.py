@@ -4,6 +4,7 @@ from tavi.base.document import BaseDocument
 from tavi.base.document import BaseDocumentMetaClass
 from tavi.connection import Connection
 from tavi.errors import TaviConnectionError
+import datetime
 import inflection
 
 class DocumentMetaClass(BaseDocumentMetaClass):
@@ -91,6 +92,9 @@ class Document(BaseDocument):
         successful. Ensures that the Document is valid before saving and
         returns False if it was not.
 
+        If the document model has a field named 'created_at', this field's
+        value will be set to the current time when the document is inserted.
+
         """
         if not self.valid:
             return False
@@ -99,6 +103,8 @@ class Document(BaseDocument):
         if self.bson_id:
             collection.update({ "_id": self._id }, { "$set": self.data })
         else:
+            if "created_at" in self.fields:
+                self.created_at = datetime.datetime.utcnow()
             self._id = collection.insert(self.data)
 
         return True

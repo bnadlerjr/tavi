@@ -1,4 +1,5 @@
 import unittest
+import datetime
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.database import Database
@@ -27,7 +28,8 @@ class DocumentTest(unittest.TestCase):
 
 class DocumentSaveTest(unittest.TestCase):
     class Sample(Document):
-        name = fields.StringField("name", required=True)
+        name       = fields.StringField("name", required=True)
+        created_at = fields.DateTimeField("created_at")
 
     def setUp(self):
         super(DocumentSaveTest, self).setUp()
@@ -52,6 +54,11 @@ class DocumentSaveTest(unittest.TestCase):
         self.sample.name = "John"
         self.sample.save()
         self.assertIsNotNone(self.sample.bson_id)
+
+    def test_save_set_created_at_if_present(self):
+        self.sample.name = "John"
+        self.assertTrue(self.sample.save())
+        self.assertIsNotNone(self.sample.created_at)
 
     def test_does_not_save_if_invalid(self):
         self.sample.name = None
