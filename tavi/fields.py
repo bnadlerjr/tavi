@@ -1,9 +1,22 @@
 """Provides various field types."""
 import re
+import datetime
 from tavi.embedded_list import EmbeddedList
 from tavi.base.field import BaseField
 from tavi.document import EmbeddedDocument
 from tavi.errors import TaviTypeError
+
+class DateTimeField(BaseField):
+    """Represents a naive datetime for a Mongo Document.
+    Supports all the validations in *BaseField*.
+
+    """
+    def validate(self, instance, value):
+        """Validates the field."""
+        super(DateTimeField, self).validate(instance, value)
+
+        if not isinstance(value, datetime.datetime):
+            instance.errors.add(self.name, "must be a valid date and time")
 
 class FloatField(BaseField):
     """Represents a floating point number for a Mongo Document.

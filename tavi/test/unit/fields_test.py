@@ -1,7 +1,35 @@
 import unittest
+from datetime import datetime
 from tavi import fields
 from tavi.document import Document, EmbeddedDocument
 from tavi.errors import TaviTypeError, Errors
+
+class DateTimeFieldTest(unittest.TestCase):
+    def test_validates_is_datetime(self):
+        class Target(object):
+            f = fields.DateTimeField("my_datetime")
+            errors = Errors()
+
+        t = Target()
+        t.f = "not a datetime"
+        self.assertEqual(["My Datetime must be a valid date and time"],
+            t.errors.full_messages)
+
+        t.f = datetime.utcnow()
+        self.assertEqual(0, t.errors.count)
+
+    def test_validates_base_errors(self):
+        class Target(object):
+            f = fields.DateTimeField("my_datetime", required=True)
+            errors = Errors()
+
+        t = Target()
+        t.f = None
+        self.assertEqual([
+            "My Datetime is required",
+            "My Datetime must be a valid date and time"],
+            t.errors.full_messages
+        )
 
 class FloatFieldTest(unittest.TestCase):
     def test_validates_is_float(self):
