@@ -101,10 +101,14 @@ class Document(BaseDocument):
 
         collection = self.__class__.collection
         if self.bson_id:
+            if "last_modified_at" in self.fields:
+                self.last_modified_at = datetime.datetime.utcnow()
             collection.update({ "_id": self._id }, { "$set": self.data })
         else:
             if "created_at" in self.fields:
                 self.created_at = datetime.datetime.utcnow()
+            if "last_modified_at" in self.fields:
+                self.last_modified_at = datetime.datetime.utcnow()
             self._id = collection.insert(self.data)
 
         return True

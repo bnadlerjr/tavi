@@ -28,8 +28,9 @@ class DocumentTest(unittest.TestCase):
 
 class DocumentSaveTest(unittest.TestCase):
     class Sample(Document):
-        name       = fields.StringField("name", required=True)
-        created_at = fields.DateTimeField("created_at")
+        name             = fields.StringField("name", required=True)
+        created_at       = fields.DateTimeField("created_at")
+        last_modified_at = fields.DateTimeField("last_modified_at")
 
     def setUp(self):
         super(DocumentSaveTest, self).setUp()
@@ -79,6 +80,16 @@ class DocumentSaveTest(unittest.TestCase):
         self.assertEqual(1, self.db.samples.count())
         actual = list(self.db.samples.find())[0]
         self.assertEqual("Joe", actual['name'])
+
+    def test_save_sets_last_modified_if_present(self):
+        self.sample.name = "John"
+        self.sample.save()
+        last_modified = self.sample.last_modified_at
+        self.assertIsNotNone(last_modified)
+
+        self.sample.name = "Joe"
+        self.sample.save()
+        self.assertNotEqual(last_modified, self.sample.last_modified_at)
 
 class DocumentDeleteTest(unittest.TestCase):
     class Sample(Document):
