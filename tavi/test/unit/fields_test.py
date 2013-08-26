@@ -18,6 +18,15 @@ class DateTimeFieldTest(unittest.TestCase):
         t.f = datetime.utcnow()
         self.assertEqual(0, t.errors.count)
 
+    def test_validates_if_not_required(self):
+        class Target(object):
+            f = fields.DateTimeField("my_datetime")
+            errors = Errors()
+
+        t = Target()
+        t.f = None
+        self.assertEqual(0, t.errors.count)
+
     def test_validates_base_errors(self):
         class Target(object):
             f = fields.DateTimeField("my_datetime", required=True)
@@ -25,11 +34,7 @@ class DateTimeFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = None
-        self.assertEqual([
-            "My Datetime is required",
-            "My Datetime must be a valid date and time"],
-            t.errors.full_messages
-        )
+        self.assertEqual(["My Datetime is required"], t.errors.full_messages)
 
 class FloatFieldTest(unittest.TestCase):
     def test_validates_is_float(self):

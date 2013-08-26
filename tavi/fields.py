@@ -15,7 +15,7 @@ class DateTimeField(BaseField):
         """Validates the field."""
         super(DateTimeField, self).validate(instance, value)
 
-        if not isinstance(value, datetime.datetime):
+        if None != value and not isinstance(value, datetime.datetime):
             instance.errors.add(self.name, "must be a valid date and time")
 
 class FloatField(BaseField):
