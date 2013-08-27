@@ -26,7 +26,7 @@ class BaseDocumentMetaClass(type):
 
         cls._fields = frozenset(
             [name for name, value in attrs.iteritems() if
-                isinstance(value, BaseField)]
+                isinstance(value, BaseField) and value.persist]
         )
 
 class BaseDocument(object):

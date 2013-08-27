@@ -32,6 +32,7 @@ class Address(EmbeddedDocument):
 class BaseDocumentFieldsTest(unittest.TestCase):
     class Sample(BaseDocument):
         name = StringField("name", required=True)
+        password = StringField("password", persist=False)
 
     class SampleWithEmbeddedField(BaseDocument):
         name = StringField("name", required=True)

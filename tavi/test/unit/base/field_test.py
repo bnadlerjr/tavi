@@ -50,6 +50,13 @@ class BaseFieldTest(unittest.TestCase):
         t.f = "type_a"
         self.assertEqual(0, t.errors.count)
 
+    def test_accepts_a_persist_keyword_argument(self):
+        class Target(object):
+            f = BaseField("my_field", persist=False)
+            errors = Errors()
+
+        t = Target()
+
     def test_multiple_fields_do_not_share_attributes(self):
         another_field = BaseField("another_field")
         self.assertEqual("my_field", self.field.name)
