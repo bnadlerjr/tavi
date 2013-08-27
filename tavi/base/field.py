@@ -7,15 +7,17 @@ class BaseField(object):
 
     All *BaseFields* support the following default validations:
 
-    required -- indicates if the field is required; default is *False*
-    default  -- default value for the field; *None* if not given
+    required  -- indicates if the field is required; default is *False*
+    default   -- default value for the field; *None* if not given
+    inclusion -- validates field value is a member of specified list
 
     """
-    def __init__(self, name, required=False, default=None):
+    def __init__(self, name, required=False, default=None, inclusion=None):
         self.name = name
         self.attribute_name = "_%s" % name
         self.required = required
         self.default = default
+        self.inclusion = inclusion
 
     def __get__(self, instance, owner):
         if self.attribute_name not in instance.__dict__ and self.default:
@@ -37,3 +39,6 @@ class BaseField(object):
         instance.errors.clear(self.name)
         if self.required and None == value:
             instance.errors.add(self.name, "is required")
+
+        if self.inclusion and value not in self.inclusion:
+            instance.errors.add(self.name, "value must be in list")

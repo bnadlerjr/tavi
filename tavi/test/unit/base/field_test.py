@@ -37,6 +37,19 @@ class BaseFieldTest(unittest.TestCase):
         t.f = 42
         self.assertEqual(42, t.f)
 
+    def test_validates_inclusion(self):
+        class Target(object):
+            f = BaseField("my_field", inclusion=['type_a', 'type_b'])
+            errors = Errors()
+
+        t = Target()
+        t.f = "not a choice"
+        self.assertEqual(["My Field value must be in list"],
+            t.errors.full_messages)
+
+        t.f = "type_a"
+        self.assertEqual(0, t.errors.count)
+
     def test_multiple_fields_do_not_share_attributes(self):
         another_field = BaseField("another_field")
         self.assertEqual("my_field", self.field.name)
