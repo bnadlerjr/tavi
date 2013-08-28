@@ -4,8 +4,12 @@ from tavi.base.document import BaseDocument
 from tavi.base.document import BaseDocumentMetaClass
 from tavi.connection import Connection
 from tavi.errors import TaviConnectionError
+from tavi.utils.timer import Timer
 import datetime
 import inflection
+import logging
+
+logger = logging.getLogger(__name__)
 
 class DocumentMetaClass(BaseDocumentMetaClass):
     """MetaClass for Documents. Sets up the database connection, infers the
@@ -50,7 +54,15 @@ class Document(BaseDocument):
 
     def delete(self):
         """Removes the Document from the collection."""
-        self.__class__.collection.remove({ "_id": self._id })
+        timer = Timer()
+        with timer:
+            result = self.__class__.collection.remove({ "_id": self._id })
+
+        logger.info("(%ss) %s DELETE %s", timer.duration_in_seconds(),
+                self.__class__.__name__, self._id)
+
+        if result.get("err"):
+            logger.error(result.get("err"))
 
     @classmethod
     def find(cls, *args, **kwargs):
@@ -58,7 +70,14 @@ class Document(BaseDocument):
         pymongo's *find* method and supports all of the same arguments.
 
         """
-        results = cls.collection.find(*args, **kwargs)
+        timer = Timer()
+        with timer:
+            results = cls.collection.find(*args, **kwargs)
+
+        logger.info("(%ss) %s FIND %s, %s (%s record(s) found)",
+            timer.duration_in_seconds(), cls.__name__, args, kwargs,
+            results.count())
+
         return [cls(**result) for result in results]
 
     @classmethod
@@ -80,11 +99,20 @@ class Document(BaseDocument):
         method and supports all of the same arguments.
 
         """
-        result = cls.collection.find_one(spec_or_id, *args, **kwargs)
+        timer = Timer()
+        with timer:
+            result = cls.collection.find_one(spec_or_id, *args, **kwargs)
+
+        found_record, num_found = None, 0
+
         if result:
-            return cls(**result)
-        else:
-            return None
+            found_record, num_found = cls(**result), 1
+
+        logger.info("(%ss) %s FIND ONE %s, %s, %s (%s record(s) found)",
+            timer.duration_in_seconds(),
+            cls.__name__, spec_or_id, args, kwargs, num_found)
+
+        return found_record
 
     def save(self):
         """Saves the Document by inserting it into the collection if it does
@@ -100,17 +128,31 @@ class Document(BaseDocument):
             return False
 
         collection = self.__class__.collection
+        timer = Timer()
+        operation = None
+
+        if "last_modified_at" in self.fields:
+            self.last_modified_at = datetime.datetime.utcnow()
+
         if self.bson_id:
-            if "last_modified_at" in self.fields:
-                self.last_modified_at = datetime.datetime.utcnow()
-            collection.update({ "_id": self._id }, { "$set": self.data })
+            operation = "UPDATE"
+            with timer:
+                result = collection.update({ "_id": self._id },
+                    { "$set": self.data })
+
+            if result.get("err"):
+                logger.error(result.get("err"))
         else:
+            operation = "INSERT"
             if "created_at" in self.fields:
                 self.created_at = datetime.datetime.utcnow()
-            if "last_modified_at" in self.fields:
-                self.last_modified_at = datetime.datetime.utcnow()
-            self._id = collection.insert(self.data)
 
+            with timer:
+                self._id = collection.insert(self.data)
+
+        logger.info("(%ss) %s %s %s, %s",
+            timer.duration_in_seconds(), self.__class__.__name__, operation,
+            self.data, self._id)
         return True
 
 class EmbeddedDocument(BaseDocument):
