@@ -1,5 +1,5 @@
 import unittest
-from tavi.base.field import BaseField
+from tavi.base.fields import BaseField
 from tavi.errors import Errors
 
 class BaseFieldTest(unittest.TestCase):

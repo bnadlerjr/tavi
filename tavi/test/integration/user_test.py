@@ -1,7 +1,7 @@
 import unittest
 from integration import BaseMongoTest
 from tavi import fields
-from tavi.document import Document
+from tavi.documents import Document
 
 class User(Document):
     email      = fields.StringField("email",      required=True)

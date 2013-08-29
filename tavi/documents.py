@@ -1,8 +1,7 @@
 """Provides support for dealing with Mongo Documents."""
 from bson.objectid import ObjectId
-from tavi.base.document import BaseDocument
-from tavi.base.document import BaseDocumentMetaClass
-from tavi.connection import Connection
+from tavi import Connection
+from tavi.base.documents import BaseDocument, BaseDocumentMetaClass
 from tavi.errors import TaviConnectionError
 from tavi.utils.timer import Timer
 import datetime

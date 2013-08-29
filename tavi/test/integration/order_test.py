@@ -1,7 +1,7 @@
 import unittest
 from integration import BaseMongoTest
 import tavi
-from tavi.document import Document, EmbeddedDocument
+from tavi.documents import Document, EmbeddedDocument
 from tavi import fields
 
 class Address(EmbeddedDocument):

@@ -1,9 +1,9 @@
 """Provides various field types."""
 import re
 import datetime
-from tavi.embedded_list import EmbeddedList
-from tavi.base.field import BaseField
-from tavi.document import EmbeddedDocument
+from tavi import EmbeddedList
+from tavi.base.fields import BaseField
+from tavi.documents import EmbeddedDocument
 from tavi.errors import TaviTypeError
 
 class DateTimeField(BaseField):

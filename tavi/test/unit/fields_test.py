@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 from tavi import fields
-from tavi.document import Document, EmbeddedDocument
+from tavi.documents import Document, EmbeddedDocument
 from tavi.errors import TaviTypeError, Errors
 
 class DateTimeFieldTest(unittest.TestCase):

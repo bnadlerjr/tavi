@@ -1,7 +1,7 @@
 import unittest
 from tavi import fields
-from tavi.document import Document, EmbeddedDocument
-from tavi.embedded_list import EmbeddedList
+from tavi.documents import Document, EmbeddedDocument
+from tavi import EmbeddedList
 from tavi.errors import TaviTypeError
 
 class EmbeddedListTest(unittest.TestCase):

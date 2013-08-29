@@ -1,8 +1,8 @@
 import unittest
 import datetime
 from tavi import fields
-from tavi.document import Document
-from tavi.serialization import serializable
+from tavi.documents import Document
+from tavi.decorators import serializable
 
 class SerializationTest(unittest.TestCase):
     @serializable

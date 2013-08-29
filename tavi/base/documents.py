@@ -1,7 +1,7 @@
 """Provides base document support."""
 import collections
 from tavi.errors import Errors
-from tavi.base.field import BaseField
+from tavi.base.fields import BaseField
 
 def get_field_attr(cls, field):
     """Custom function for retrieving a tavi.field attribute. Handles nested

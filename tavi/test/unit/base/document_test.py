@@ -1,6 +1,6 @@
 import unittest
-from tavi.base.document import BaseDocument
-from tavi.document import EmbeddedDocument
+from tavi.base.documents import BaseDocument
+from tavi.documents import EmbeddedDocument
 from tavi.fields import EmbeddedField, ListField, StringField
 
 class BaseDocumentNoFieldsTest(unittest.TestCase):
