@@ -68,7 +68,7 @@ class BaseDocumentFieldsTest(unittest.TestCase):
         sample = self.Sample(name="John", not_a_field=True)
         self.assertEqual("John", sample.name)
 
-    def xtest_init_with_kwargs_does_not_overwrite_attributes(self):
+    def test_init_with_kwargs_does_not_overwrite_attributes(self):
         class User(BaseDocument):
             first_name = StringField("first_name")
             last_name  = StringField("last_name")
