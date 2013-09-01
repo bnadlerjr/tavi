@@ -43,8 +43,8 @@ class Document(BaseDocument):
     __metaclass__ = DocumentMetaClass
 
     def __init__(self, **kwargs):
+        self._id = kwargs.pop("_id", None)
         super(Document, self).__init__(**kwargs)
-        self._id = None
 
     @property
     def bson_id(self):

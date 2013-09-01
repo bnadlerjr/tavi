@@ -129,6 +129,7 @@ class DocumentFindTest(unittest.TestCase):
     def test_find_one(self):
         result = self.Sample.find_one(self.ids[0])
         self.assertEqual("John", result.first_name)
+        self.assertEqual(self.ids[0], result.bson_id)
 
     def test_find_one_does_not_find_any(self):
         self.assertIsNone(self.Sample.find_one({"first_name": "No such name"}))
@@ -136,16 +137,21 @@ class DocumentFindTest(unittest.TestCase):
     def test_find_by_id_using_bson_id(self):
         result = self.Sample.find_by_id(self.ids[1])
         self.assertEqual("Joe", result.first_name)
+        self.assertEqual(self.ids[1], result.bson_id)
 
     def test_find_by_id_using_string_id(self):
         result = self.Sample.find_by_id(str(self.ids[1]))
         self.assertEqual("Joe", result.first_name)
+        self.assertEqual(self.ids[1], result.bson_id)
 
     def test_find(self):
         result = self.Sample.find({ "last_name": "Smith" })
         self.assertEqual(2, len(result))
         self.assertEqual("Smith", result[0].last_name)
         self.assertEqual("Smith", result[1].last_name)
+
+        self.assertEqual(self.ids[1], result[0]._id)
+        self.assertEqual(self.ids[2], result[1]._id)
 
     def test_find_all(self):
         result = self.Sample.find_all()
