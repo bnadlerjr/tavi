@@ -26,11 +26,17 @@ class DocumentTest(unittest.TestCase):
                 'samples'
             ), self.Sample.collection)
 
+class Address(EmbeddedDocument):
+    street           = fields.StringField("street")
+    created_at       = fields.DateTimeField("created_at")
+    last_modified_at = fields.DateTimeField("last_modified_at")
+
 class DocumentSaveTest(unittest.TestCase):
     class Sample(Document):
         name             = fields.StringField("name", required=True)
         created_at       = fields.DateTimeField("created_at")
         last_modified_at = fields.DateTimeField("last_modified_at")
+        address          = fields.EmbeddedField("address", Address)
 
     def setUp(self):
         super(DocumentSaveTest, self).setUp()
@@ -56,10 +62,17 @@ class DocumentSaveTest(unittest.TestCase):
         self.sample.save()
         self.assertIsNotNone(self.sample.bson_id)
 
-    def test_save_set_created_at_if_present(self):
+    def test_save_sets_created_at_if_present(self):
         self.sample.name = "John"
         self.assertTrue(self.sample.save())
         self.assertIsNotNone(self.sample.created_at)
+
+    def test_save_sets_created_at_for_any_embedded_documents(self):
+        address = Address(street="123 Elm St.")
+        self.sample.name = "John"
+        self.sample.address = address
+        self.assertTrue(self.sample.save())
+        self.assertIsNotNone(self.sample.address.created_at)
 
     def test_does_not_save_if_invalid(self):
         self.sample.name = None
@@ -90,6 +103,17 @@ class DocumentSaveTest(unittest.TestCase):
         self.sample.name = "Joe"
         self.sample.save()
         self.assertNotEqual(last_modified, self.sample.last_modified_at)
+
+    def test_save_sets_last_modified_for_any_embedded_documents(self):
+        address = Address(street="123 Elm St.")
+        self.sample.name = "John"
+        self.assertTrue(self.sample.save(), self.sample.errors.full_messages)
+        last_modified = self.sample.address.last_modified_at
+        self.assertIsNotNone(last_modified)
+
+        self.sample.name = "Joe"
+        self.assertTrue(self.sample.save(), self.sample.errors.full_messages)
+        self.assertNotEqual(last_modified, self.sample.address.last_modified_at)
 
 class DocumentDeleteTest(unittest.TestCase):
     class Sample(Document):

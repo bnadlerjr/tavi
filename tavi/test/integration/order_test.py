@@ -11,8 +11,10 @@ class Address(EmbeddedDocument):
     postal_code = fields.StringField("postal_code")
 
 class OrderLine(EmbeddedDocument):
-    quantity    = fields.IntegerField("quantity")
-    total_price = fields.FloatField("total_price")
+    quantity         = fields.IntegerField("quantity")
+    total_price      = fields.FloatField("total_price")
+    created_at       = fields.DateTimeField("created_at")
+    last_modified_at = fields.DateTimeField("last_modified_at")
 
 class Order(Document):
     name        = fields.StringField("name")
@@ -107,13 +109,19 @@ class OrderTest(BaseMongoTest):
         self.assertTrue(order.save())
 
         orders = list(self.db.orders.find())
+        lines = orders[0]["order_lines"]
         self.assertEqual(1, len(orders))
-        self.assertEqual(2, len(orders[0]["order_lines"]))
+        self.assertEqual(2, len(lines))
 
-        self.assertEqual([
-            { "quantity": 1, "total_price": 19.99 },
-            { "quantity": 3, "total_price": 39.99 }
-        ], orders[0]["order_lines"])
+        self.assertEqual(1, lines[0]["quantity"])
+        self.assertEqual(19.99, lines[0]["total_price"])
+        self.assertIsNotNone(lines[0]["created_at"])
+        self.assertEqual(lines[0]["created_at"], lines[0]["last_modified_at"])
+
+        self.assertEqual(3, lines[1]["quantity"])
+        self.assertEqual(39.99, lines[1]["total_price"])
+        self.assertIsNotNone(lines[1]["created_at"])
+        self.assertEqual(lines[1]["created_at"], lines[1]["last_modified_at"])
 
     def test_update_with_order_lines(self):
         order = Order(
@@ -136,10 +144,49 @@ class OrderTest(BaseMongoTest):
         self.assertTrue(order.save())
 
         orders = list(self.db.orders.find())
+        lines = orders[0]["order_lines"]
+        self.assertEqual(1, len(orders))
+        self.assertEqual(2, len(lines))
+
+        self.assertEqual(42, lines[0]["quantity"])
+        self.assertEqual(19.99, lines[0]["total_price"])
+        self.assertIsNotNone(lines[0]["created_at"])
+        self.assertEqual(lines[0]["created_at"], lines[0]["last_modified_at"])
+
+        self.assertEqual(3, lines[1]["quantity"])
+        self.assertEqual(39.99, lines[1]["total_price"])
+        self.assertIsNotNone(lines[1]["created_at"])
+        self.assertEqual(lines[1]["created_at"], lines[1]["last_modified_at"])
+
+    def test_update_with_order_lines(self):
+        order = Order(
+            name     = "John Doe",
+            email    = "jdoe@example.com",
+            pay_type = "Mastercard"
+        )
+
+        line_a = OrderLine(quantity=1, total_price=19.99)
+        line_b = OrderLine(quantity=3, total_price=39.99)
+        order.order_lines.append(line_a)
+        order.order_lines.append(line_b)
+
+        self.assertTrue(order.save())
+        orders = list(self.db.orders.find())
         self.assertEqual(1, len(orders))
         self.assertEqual(2, len(orders[0]["order_lines"]))
 
-        self.assertEqual([
-            { "quantity": 42, "total_price": 19.99 },
-            { "quantity": 3, "total_price": 39.99 }
-        ], orders[0]["order_lines"])
+        order.order_lines[0].quantity = 42
+        self.assertTrue(order.save())
+
+        orders = list(self.db.orders.find())
+        lines = orders[0]["order_lines"]
+        self.assertEqual(1, len(orders))
+        self.assertEqual(2, len(lines))
+
+        self.assertEqual(42, lines[0]["quantity"])
+        self.assertEqual(19.99, lines[0]["total_price"])
+        self.assertNotEqual(lines[0]["created_at"], lines[0]["last_modified_at"])
+
+        self.assertEqual(3, lines[1]["quantity"])
+        self.assertEqual(39.99, lines[1]["total_price"])
+        self.assertNotEqual(lines[1]["created_at"], lines[1]["last_modified_at"])

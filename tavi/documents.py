@@ -4,6 +4,7 @@ from tavi import Connection
 from tavi.base.documents import BaseDocument, BaseDocumentMetaClass
 from tavi.errors import TaviConnectionError
 from tavi.utils.timer import Timer
+import collections
 import datetime
 import inflection
 import logging
@@ -136,9 +137,7 @@ class Document(BaseDocument):
         operation = None
 
         now = datetime.datetime.utcnow()
-
-        if "last_modified_at" in self.fields:
-            setattr(self, "last_modified_at", now)
+        self.__update_timestamps("last_modified_at", now)
 
         if self.bson_id:
             operation = "UPDATE"
@@ -150,8 +149,7 @@ class Document(BaseDocument):
                 logger.error(result.get("err"))
         else:
             operation = "INSERT"
-            if "created_at" in self.fields:
-                setattr(self, "created_at", now)
+            self.__update_timestamps("created_at", now)
 
             with timer:
                 self._id = collection.insert(self.data)
@@ -160,6 +158,22 @@ class Document(BaseDocument):
             timer.duration_in_seconds(), self.__class__.__name__, operation,
             self.data, self._id)
         return True
+
+    def __update_timestamps(self, name, timestamp):
+        # TODO: Should this be pulled out into a generic function? i.e.
+        #       set_nested_field_attr(cls, field, value)
+        for field in self.fields:
+            value = getattr(self, field)
+            if name == field:
+                setattr(self, name, timestamp)
+            elif isinstance(value, collections.Iterable):
+                for item in value:
+                    if isinstance(item, EmbeddedDocument):
+                        if name in item.fields:
+                            setattr(item, name, timestamp)
+            elif isinstance(value, EmbeddedDocument):
+                if name in value.fields:
+                    setattr(value, name, timestamp)
 
 class EmbeddedDocument(BaseDocument):
     """Represents a single EmbeddedDocument. Supports an *owner* attribute that
