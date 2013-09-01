@@ -135,8 +135,10 @@ class Document(BaseDocument):
         timer = Timer()
         operation = None
 
+        now = datetime.datetime.utcnow()
+
         if "last_modified_at" in self.fields:
-            self.last_modified_at = datetime.datetime.utcnow()
+            setattr(self, "last_modified_at", now)
 
         if self.bson_id:
             operation = "UPDATE"
@@ -149,7 +151,7 @@ class Document(BaseDocument):
         else:
             operation = "INSERT"
             if "created_at" in self.fields:
-                self.created_at = datetime.datetime.utcnow()
+                setattr(self, "created_at", now)
 
             with timer:
                 self._id = collection.insert(self.data)
