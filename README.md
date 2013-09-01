@@ -1,5 +1,7 @@
 # Tavi
 
+Note: This is Alpha software. Refer to GitHub issues for a list of features that still need to be implemented.
+
 Tavi (as in [Rikki Tikki Tavi](http://en.wikipedia.org/wiki/Rikki-Tikki-Tavi)) is an extremely thin Mongo object mapper for Python. It is a thin abstraction over [pymongo](http://api.mongodb.org/python/current/) that allows you to easily model your applications and persist your data in MongoDB.
 
 ## Getting Started
@@ -26,26 +28,28 @@ class Product(document.Document):
 
 Use your models to create and find documents:
 
-    >>> product = Product(name="Spam", sku="123", price=2.99)
+```python
+>>> product = Product(name="Spam", sku="123", price=2.99)
 
-    >>> product.valid
-    False
+>>> product.valid
+False
 
-    >>> product.errors.full_messages
-    ['Description is required']
+>>> product.errors.full_messages
+['Description is required']
 
-    >>> product.description = "A tasty canned precooked meat product."
+>>> product.description = "A tasty canned precooked meat product."
 
-    >>> product.valid
-    True
+>>> product.valid
+True
 
-    >>> product.save()
-    True
+>>> product.save()
+True
 
-    >>> for p in Product.find():
-    ...     print p.name
-    ...
-    Spam
+>>> for p in Product.find():
+...     print p.name
+...
+Spam
+```
 
 For more details see [Using Tavi](#using-tavi).
 
@@ -59,7 +63,7 @@ For more details see [Using Tavi](#using-tavi).
 
 #### Issues / Roadmap
 
-Use GitHub [issues](https://github.com/bnadlerjr/tavi/issues) for reporting bugs and feature requests. This library is meant to be lightweight so I probably won't be adding much more support outside of some new field types. Feel free to submit pull requests for any critical features you think may be missing.
+Use GitHub [issues](https://github.com/bnadlerjr/tavi/issues) for reporting bugs and feature requests. This library is meant to be lightweight so I probably won't be adding many features but feel free to submit pull requests for any critical features you think may be missing.
 
 #### Patches / Pull Requests
 
@@ -133,13 +137,65 @@ Fields are how Tavi maps the attributes in your objects to attributes in the doc
 
 #### Basic Fields
 
-Three basic field types are supported:
+There are several field types supported:
 
-* ``tavi.fields.FloatField``
-* ``tavi.fields.IntegerField``
-* ``tavi.fields.StringField``
+`tavi.fields.DateTimeField`:
+    Represents a naive datetime for a Mongo Document. Supports all the validations in `tavi.base.fields.BaseField`.
+
+`tavi.fields.FloatField`:
+    Represents a floating point number for a Mongo Document. Supports all the validations in `tavi.base.fields.BaseField` and the following:
+
+    * min_value: validates the minimum value the field value can be
+    * max_value: validates the maximum value the field value can be
+
+`tavi.fields.IntegerField`:
+    Represents a integer number for a Mongo Document. Supports all the validations in `tavi.base.fields.BaseField` and the following:
+
+    * min_value: validates the minimum value the field value can be
+    * max_value: validates the maximum value the field value can be
+
+`tavi.fields.StringField`:
+    Represents a String field for a Mongo Document. Supports all the validations in `tavi.base.fields.BaseField` and the following:
+
+    * length    : validates the field value has an exact length; default is `None`
+
+    * min_length: ensures field has a minimum number of characters; default is `None`
+
+    * max_length: ensures field is not more than a maximum number of characters; default is `None`
+
+    * pattern   : validates the field matches the given regular expression pattern; default is `None`
 
 #### Embedded Fields
+
+`tavi.fields.EmbeddedField`'s are how embedded documents are placed in documents. For example, let's say we have defined an embedded document for an address.
+
+```python
+class Address(EmbeddedDocument):
+    street      = StringField("street")
+    city        = StringField("city")
+    state       = StringField("state")
+    postal_code = StringField("postal_code")
+```
+
+This embedded document can be placed into a user document using a `tavi.fields.EmbeddedField`.
+
+```python
+class User(Document):
+    name = StringField("name")
+    address = EmbeddedField("address", Address)
+```
+
+The address field can now be accessed through the user object...
+
+```python
+user = User()
+user.address.street = "123 Elm Street"
+user.address.city = "Anywhere"
+user.address.state = "NY"
+user.address.postal_code = "00000"
+```
+
+...and when the user is saved, the address is persisted along with it.
 
 #### Embedded List Fields
 
