@@ -223,6 +223,15 @@ class StringFieldTest(unittest.TestCase):
         super(StringFieldTest, self).setUp()
         self.field = fields.StringField("my_field")
 
+    def test_strips_whitespace_from_value(self):
+        class Target(object):
+            f = fields.StringField("my_field")
+            errors = Errors()
+
+        t = Target()
+        t.f = ' a value with leading and trailing whitespace    '
+        self.assertEqual('a value with leading and trailing whitespace', t.f)
+
     def test_sets_default_min_length(self):
         self.assertEqual(None, self.field.min_length)
 
@@ -303,7 +312,6 @@ class StringFieldTest(unittest.TestCase):
         )
 
     def test_handles_empty_strings_for_required_validation(self):
-
         class Target(object):
             f = fields.StringField("my_field", required=True, min_length=10)
             errors = Errors()
@@ -311,6 +319,13 @@ class StringFieldTest(unittest.TestCase):
         t = Target()
 
         t.f = ''
+        self.assertEqual([
+            "My Field is required",
+            "My Field is too short (minimum is 10 characters)"],
+            t.errors.full_messages
+        )
+
+        t.f = '        '
         self.assertEqual([
             "My Field is required",
             "My Field is too short (minimum is 10 characters)"],

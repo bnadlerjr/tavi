@@ -108,6 +108,10 @@ class StringField(BaseField):
         self.max_length = max_length
         self.regex      = re.compile(pattern) if pattern else None
 
+    def __set__(self, instance, unstripped_value):
+        value = unstripped_value.strip() if unstripped_value else None
+        super(StringField, self).__set__(instance, value)
+
     def validate(self, instance, value):
         """Validates the field."""
         super(StringField, self).validate(instance, value)

@@ -177,6 +177,8 @@ Represents a String field for a Mongo Document. Supports the following additiona
 * max_length: ensures field is not more than a maximum number of characters; default is `None`
 * pattern   : validates the field matches the given regular expression pattern; default is `None`
 
+Note that leading and trailing whitespace is automatically stripped from StringField values.
+
 #### <a id="custom-fields"></a>Custom Fields
 
 If you need to add your own field types you may inherit from either ``tavi.base.field.BaseField`` or one of the other field types. Any classes that inherit from ``tavi.base.field.BaseField`` must implement the ``validate`` method and call ``super`` in order for validations to work. For example:
