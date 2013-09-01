@@ -302,6 +302,21 @@ class StringFieldTest(unittest.TestCase):
             t.errors.full_messages
         )
 
+    def test_handles_empty_strings_for_required_validation(self):
+
+        class Target(object):
+            f = fields.StringField("my_field", required=True, min_length=10)
+            errors = Errors()
+
+        t = Target()
+
+        t.f = ''
+        self.assertEqual([
+            "My Field is required",
+            "My Field is too short (minimum is 10 characters)"],
+            t.errors.full_messages
+        )
+
 class EmbeddedFieldTest(unittest.TestCase):
     def test_must_be_an_embedded_document(self):
         class Address(object):

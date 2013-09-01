@@ -113,6 +113,9 @@ class StringField(BaseField):
         super(StringField, self).validate(instance, value)
         val_length = len(value) if value else None
 
+        if self.required and '' == value:
+            instance.errors.add(self.name, "is required")
+
         if self.length and self.length != val_length:
             instance.errors.add(self.name,
                 "is the wrong length (should be %s characters)" % self.length)
