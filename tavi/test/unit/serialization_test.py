@@ -2,10 +2,8 @@ import unittest
 import datetime
 from tavi import fields
 from tavi.documents import Document
-from tavi.decorators import serializable
 
 class SerializationTest(unittest.TestCase):
-    @serializable
     class Target(Document):
         name     = fields.StringField("name")
         price    = fields.FloatField("price")

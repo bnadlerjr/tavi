@@ -134,6 +134,25 @@ Document objects have several attributes for retrieving information about them:
 * `#errors` returns a `tavi.errors.Errors` object (see [validations](#validations) for more info)
 * `#fields` returns the list of fields defined for the document
 
+#### (De-)Serialization
+
+Document objects can be (de-)serialized from/to JSON. Under the hood it delegates to pymongo's [`bson.json_util`](http://api.mongodb.org/python/current/api/bson/json_util.html). The `#to_json` and `from_json` methods convert to JSON and from JSON, respectively. In addition, the `#to_json` instance method can be given an optional array of fields to convert to JSON. By default, all fields are serialized.
+
+```python
+class Order(tavi.document.Document):
+    name     = tavi.fields.StringField("name", required=True)
+    address  = tavi.fields.EmbeddedField("address", Address)
+    email    = tavi.fields.StringField("email", required=True)
+    pay_type = tavi.fields.StringField("pay_type", required=True, default="Mastercard")
+```
+
+```python
+>>> order = Order(name="My Order", email="jdoe@example.com", pay_type="Visa")
+
+>>> order.to_json(["name", "email"])
+... '{"name": "My Order", "email": "jdoe@example.com"}'
+```
+
 ### <a id="embedded-documents"></a>Embedded Documents
 
 Embedded documents are almost identical to Documents with one exception: they are saved inside of another document instead of in their own collection. They inherit from ```tavi.document.EmbeddedDocument``` and have support for [validations](#validations).

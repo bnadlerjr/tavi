@@ -1,5 +1,6 @@
 """Provides base document support."""
 import collections
+from bson.json_util import dumps, loads
 from tavi.errors import Errors
 from tavi.base.fields import BaseField
 
@@ -63,3 +64,19 @@ class BaseDocument(object):
     def valid(self):
         """Indicates if all the fields in the Document are valid."""
         return 0 == self.errors.count
+
+    def to_json(self, fields=None):
+        """Convert Document model object to JSON. Optionally, specify which
+        fields should be serialized.
+
+        """
+        if fields:
+            return dumps({ field: self.data[field] for field in fields })
+        else:
+            return dumps(self.data)
+
+    @classmethod
+    def from_json(cls, json_str):
+        """Deserialize a JSON string into a Document model object."""
+        attrs = loads(json_str)
+        return cls(**attrs)
