@@ -88,14 +88,6 @@ Alternatively, you can also use the MongoDB URI format:
 tavi.connection.Connection.setup("my_test_database", host="mongodb://localhost:27017/")
 ```
 
-Once a connection has been established, you can grab a handle to the database directly, like this:
-
-```python
-tavi.connection.Connection.database
-```
-
-The database object that is returned is a [pymongo database](http://api.mongodb.org/python/current/api/pymongo/database.html) and supports all of its methods.
-
 ### Defining Documents
 
 Documents are the building blocks for defining your models. An instantiated [```tavi.document.Document```](#documents) class represents a single document in a MongoDB collection. It also provides a number of class methods used for querying the collection itself. You can embed documents inside other documents (rather than in their own collections) using the [```tavi.document.EmbeddedDocument```](#embedded-documents) class.
@@ -109,8 +101,38 @@ class Order(tavi.document.Document):
     name     = tavi.fields.StringField("name", required=True)
     address  = tavi.fields.EmbeddedField("address", Address)
     email    = tavi.fields.StringField("email", required=True)
-    pay_type = tavi.fields.StringField("pay_type", required=True)
+    pay_type = tavi.fields.StringField("pay_type", required=True, default="Mastercard")
 ```
+
+Note: The collection name that is stored in Mongo is derived from the class name. In the example above, the collection in Mongo would be named `orders`. For the initial version of Tavi the collection name is not customizable. I have plans to support it in a future version, however.
+
+Document objects are initialized like any other object. Additionally, they may be initialized with keyword arguments that set the field values.
+
+```python
+>>> order = Order(name="My Order", email="jdoe@example.com")
+
+>>> order.name
+"My Order"
+
+>>> order.email
+"jdoe@example.com"
+
+>>> order.address
+None
+
+>>> order.pay_type
+"Mastercard"
+```
+
+Any fields that are omitted from the list of keyword arguments are set to either `None` or their default value, if provided. Any keyword argument that is not a valid field is simply ignored.
+
+Document objects have several attributes for retrieving information about them:
+
+* `#bson_id` returns the ID of the document; this value can also be retrieved using `#_id`
+* `#collection_name` returns the name of the collection
+* `#data` returns a dictionary that contains all the fields and their values
+* `#errors` returns a `tavi.errors.Errors` object (see [validations](#validations) for more info)
+* `#fields` returns the list of fields defined for the document
 
 ### <a id="embedded-documents"></a>Embedded Documents
 
@@ -126,7 +148,38 @@ class Address(tavi.document.EmbeddedDocument):
 
 ### Fields
 
-Fields are how Tavi maps the attributes in your objects to attributes in the document for your collections in MongoDB. All fields inherit from ``tavi.base.field.BaseField`` which provides some common [validations](#validations). If you need to add your own field types you may inherit from either ``tavi.base.field.BaseField`` or one of the other field types. Any classes that inherit from ``tavi.base.field.BaseField`` must implement the ``validate`` method and call ``super`` in order for validations to work. For example:
+Fields are how Tavi maps the attributes in your objects to attributes in the document for your collections in MongoDB. All fields inherit from ``tavi.base.field.BaseField`` which provides some common [validations](#validations).
+
+#### Basic Fields
+
+There are several field types supported:
+
+`tavi.fields.DateTimeField`:
+Represents a naive datetime for a Mongo Document.
+
+`tavi.fields.FloatField`:
+Represents a floating point number for a Mongo Document. Supports the following additional validations:
+
+* min_value: validates the minimum value the field value
+* max_value: validates the maximum value the field value
+
+`tavi.fields.IntegerField`:
+Represents a integer number for a Mongo Document. Supports the following additional validations:
+
+* min_value: validates the minimum value the field value
+* max_value: validates the maximum value the field value
+
+`tavi.fields.StringField`:
+Represents a String field for a Mongo Document. Supports the following additional validations:
+
+* length    : validates the field value has an exact length; default is `None`
+* min_length: ensures field has a minimum number of characters; default is `None`
+* max_length: ensures field is not more than a maximum number of characters; default is `None`
+* pattern   : validates the field matches the given regular expression pattern; default is `None`
+
+#### Custom Fields
+
+If you need to add your own field types you may inherit from either ``tavi.base.field.BaseField`` or one of the other field types. Any classes that inherit from ``tavi.base.field.BaseField`` must implement the ``validate`` method and call ``super`` in order for validations to work. For example:
 
 ```python
     class MyCustomField(tavi.base.field.BaseField):
@@ -134,36 +187,6 @@ Fields are how Tavi maps the attributes in your objects to attributes in the doc
             super(MyCustomField, self).validate(instance, value)
             # Your validation logic goes here...
 ```
-
-#### Basic Fields
-
-There are several field types supported:
-
-`tavi.fields.DateTimeField`:
-    Represents a naive datetime for a Mongo Document. Supports all the validations in `tavi.base.fields.BaseField`.
-
-`tavi.fields.FloatField`:
-    Represents a floating point number for a Mongo Document. Supports all the validations in `tavi.base.fields.BaseField` and the following:
-
-    * min_value: validates the minimum value the field value can be
-    * max_value: validates the maximum value the field value can be
-
-`tavi.fields.IntegerField`:
-    Represents a integer number for a Mongo Document. Supports all the validations in `tavi.base.fields.BaseField` and the following:
-
-    * min_value: validates the minimum value the field value can be
-    * max_value: validates the maximum value the field value can be
-
-`tavi.fields.StringField`:
-    Represents a String field for a Mongo Document. Supports all the validations in `tavi.base.fields.BaseField` and the following:
-
-    * length    : validates the field value has an exact length; default is `None`
-
-    * min_length: ensures field has a minimum number of characters; default is `None`
-
-    * max_length: ensures field is not more than a maximum number of characters; default is `None`
-
-    * pattern   : validates the field matches the given regular expression pattern; default is `None`
 
 #### Embedded Fields
 
@@ -209,4 +232,39 @@ user.address.postal_code = "00000"
 
 ### Exceptions
 
+Tavi defines several custom exceptions:
+
+`TaviError`: Base error for all Tavi exceptions. If you need to define your own exceptions you may inherit from this class.
+
+`TaviTypeError`: Raised when an operation or function is applied to an object of inappropriate type. For example, this error will be raised if you try to add an object that does not derive from `tavi.documents.EmbeddedDocument` to a `tavi.fields.EmbeddedField`.
+
+`TaviConnectionError`: Raised when Tavi cannot connect to Mongo.
+
 ### Using pymongo
+
+Tavi is just a thin wrapper for pymongo. When you need to work with pymongo directly, Tavi has a couple of convenience features to help you out.
+
+Once a connection has been established, you can grab a handle to the database directly, like this:
+
+```python
+tavi.connection.Connection.database
+```
+
+The database object that is returned is a [pymongo database](http://api.mongodb.org/python/current/api/pymongo/database.html) and supports all of its methods.
+
+You can access a collection directly from a document model. Given a document model:
+
+```python
+class User(Document):
+    email = StringField("email")
+    first_name = StringField("first_name")
+    last_name = StringField("last_name")
+```
+
+If you call
+
+```python
+User.collection
+```
+
+You will get back a handle to the `users` collection. This collection is a [pymongo collection](http://api.mongodb.org/python/current/api/pymongo/collection.html) and supports all of it's methods.
