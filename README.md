@@ -150,7 +150,7 @@ class Address(tavi.document.EmbeddedDocument):
 
 Fields are how Tavi maps the attributes in your objects to attributes in the document for your collections in MongoDB. All fields inherit from ``tavi.base.field.BaseField`` which provides some common [validations](#validations).
 
-#### Basic Fields
+#### <a id="basic-fields"></a>Basic Fields
 
 There are several field types supported:
 
@@ -177,7 +177,7 @@ Represents a String field for a Mongo Document. Supports the following additiona
 * max_length: ensures field is not more than a maximum number of characters; default is `None`
 * pattern   : validates the field matches the given regular expression pattern; default is `None`
 
-#### Custom Fields
+#### <a id="custom-fields"></a>Custom Fields
 
 If you need to add your own field types you may inherit from either ``tavi.base.field.BaseField`` or one of the other field types. Any classes that inherit from ``tavi.base.field.BaseField`` must implement the ``validate`` method and call ``super`` in order for validations to work. For example:
 
@@ -222,13 +222,172 @@ user.address.postal_code = "00000"
 
 #### Embedded List Fields
 
+`tavi.fields.ListFields` are used for embedding a list of Embedded fields. For example:
+
+```python
+class OrderLine(EmbeddedDocument):
+    quantity    = fields.IntegerField("quantity")
+    total_price = fields.FloatField("total_price")
+
+class Order(Document):
+    name        = fields.StringField("name")
+    address     = fields.EmbeddedField("address", Address)
+    email       = fields.StringField("email")
+    pay_type    = fields.StringField("pay_type")
+    order_lines = fields.ListField("order_lines")
+```
+
+In the above example, `OrderLine` is an `EmbeddedDocument` and `Order` is it's container `Document`. An `OrderLine` object can be appended to an `Order` like this:
+
+```python
+>>> order = Order(
+...     name     = "John Doe",
+...     email    = "jdoe@example.com",
+...     pay_type = "Mastercard"
+... )
+
+>>> line_a = OrderLine(quantity=1, total_price=19.99)
+>>> line_b = OrderLine(quantity=3, total_price=39.99)
+
+>>> order.order_lines.append(line_a)
+>>> order.order_lines.append(line_b)
+```
+
+When `order` is saved, it's `order_lines` are persisted as an array in the document. `order_lines` can be accessed through their owner, `order`.
+
+```python
+>>> order.order_lines[0].price
+19.99
+```
+
 ### <a id="validations"></a>Validations
+
+Document objects support field validations through two attributes:
+
+`#valid`: returns `True` or `False` indicating if all field validations are met
+`#errors`: returns a `tavi.errors.Errors` object that holds information about all field errors
+
+`tavi.errors.Errors` is a dictionary-like object with the following interface:
+
+```python
+>>> errors = Errors()
+
+>>> errors.add("email", "is required")
+
+>>> errors.get("email")
+"is required"
+
+>>> errors.full_messages_for("email")
+"Email is required"
+
+>>> errors.full_messages
+["Email is required"]
+
+>>> errors.count
+1
+
+>>> errors.clear
+
+>>> errors.count
+0
+```
+
+In practice, fields will handle adding and clearing errors themselves.
+
+```python
+class User(Document)
+    email = StringField("email", required=True)
+```
+
+```python
+>>> user = User()
+
+>>> user.valid
+False
+
+>>> user.errors.get("email")
+"is required"
+
+>>> user.errors.full_messages_for("email")
+"Email is required"
+
+>>> user.errors.full_messages
+["Email is required"]
+
+>>> user.email = "jdoe@example.com"
+
+>>> user.valid
+True
+
+>>> user.errors.count
+0
+```
+
+Knowing how `tavi.errors.Errors` works is useful when you need to define your own [custom fields](#custom-fields).
+
+#### Specifying Validations
+
+All fields that inherit from `tavi.base.fields.BaseField` support the following validations:
+
+required  -- indicates if the field is required; default is `False`
+default   -- default value for the field; `None` if not given
+inclusion -- validates field value is a member of specified list
+persist   -- boolean indicating if field should be persisted to Mongo; default is True
+
+Here are some examples:
+
+```python
+class User(Document):
+    email = StringField("email", required=True)
+    age = IntegerField("age", default=0)
+    pay_type = StringField("pay_type", inclusion=["Mastercard", "Visa"])
+    password = StringField("password", persist=False)
+```
+
+Refer to [Basic Fields](#basic-fields) for a list of field types and their validations.
 
 ### Persistence
 
 #### <a id="saving-documents"></a>Saving Documents
 
+Document objects are persisted using the `#save` method. This method inserts the document into the collection if it does not exist or updates it if it does. The method returns `True` if the save was successful. Before performing the save, it ensures that the Document is valid and returns `False` if it was not.
+
+If the document object has a field named `created_at`, this field's value will be set to the current time when the document is inserted. Also, if a field named `last_modified_at` is defined, this value will be set when the document is either inserted or updated.
+
 #### <a id="finding-documents"></a>Finding Documents
+
+Document objects can be retrieved using finder classmethods. There are two main
+finder methods: `find` and `find_one`. These are wrappers around the pymongo
+`find` and `find_one` methods and support all the same arguments. The
+difference is these methods wrap the return result into a Document object.
+
+It is important to note that when using these methods, if you restrict the fields that are returned, the resulting document object(s) will have these fields set to `None`. If you later try to persist one of these objects, you will overwrite the value of the field. Therefore I recommend that you [use the collection directly](#using-pymongo) and have it return a dictionary result set.
+
+Document objects also support two convenience finder methods: `find_by_id` and `find_all` which delegate to `find_one` and `find`, respectively.
+
+You may also want to define your own custom finder methods. I recommend you delegate to the main finder methods like this:
+
+```python
+class User(Document):
+    email = StringField("email")
+    last_name = StringField("last_name")
+
+    @classmethod
+    def find_by_email(cls, email)
+        """Example custom finder."""
+        return cls.find_one({"email": email})
+
+    @classmethod
+    def find_by_last_name(cls, last_name)
+        """Example custom finder."""
+        return cls.find({"last_name": last_name})
+```
+
+This way you will not have to wrap the results as document objects, since it will be done for you.
+
+#### Deleting Documents
+
+Document objects may be removed from the collection using the `#delete` method.  There is no support for undoing this operation.
 
 ### Exceptions
 
@@ -240,7 +399,7 @@ Tavi defines several custom exceptions:
 
 `TaviConnectionError`: Raised when Tavi cannot connect to Mongo.
 
-### Using pymongo
+### <a id="using-pymongo"></a>Using pymongo
 
 Tavi is just a thin wrapper for pymongo. When you need to work with pymongo directly, Tavi has a couple of convenience features to help you out.
 
