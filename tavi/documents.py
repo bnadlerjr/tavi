@@ -51,6 +51,11 @@ class Document(BaseDocument):
         """Returns the BSON Id of the Document."""
         return self._id
 
+    @classmethod
+    def count(cls):
+        """Returns the total number of documents in the collection."""
+        return cls.collection.count()
+
     def delete(self):
         """Removes the Document from the collection."""
         timer = Timer()

@@ -358,10 +358,7 @@ If the document object has a field named `created_at`, this field's value will b
 
 #### <a id="finding-documents"></a>Finding Documents
 
-Document objects can be retrieved using finder classmethods. There are two main
-finder methods: `find` and `find_one`. These are wrappers around the pymongo
-`find` and `find_one` methods and support all the same arguments. The
-difference is these methods wrap the return result into a Document object.
+Document objects can be retrieved using finder classmethods. There are two main finder methods: `find` and `find_one`. These are wrappers around the pymongo `find` and `find_one` methods and support all the same arguments. The difference is these methods wrap the return result into a Document object.
 
 It is important to note that when using these methods, if you restrict the fields that are returned, the resulting document object(s) will have these fields set to `None`. If you later try to persist one of these objects, you will overwrite the value of the field. Therefore I recommend that you [use the collection directly](#using-pymongo) and have it return a dictionary result set.
 
@@ -386,6 +383,8 @@ class User(Document):
 ```
 
 This way you will not have to wrap the results as document objects, since it will be done for you.
+
+Document objects also support a `count` method that will return the total number of documents in the collection.
 
 #### Deleting Documents
 

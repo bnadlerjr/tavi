@@ -160,3 +160,6 @@ class DocumentFindTest(unittest.TestCase):
     def test_find_all_when_collection_is_empty(self):
         self.db.drop_collection("samples")
         self.assertEqual([], self.Sample.find_all())
+
+    def test_count(self):
+        self.assertEqual(3, self.Sample.count())
