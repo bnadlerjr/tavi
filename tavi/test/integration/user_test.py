@@ -34,7 +34,7 @@ class UserTest(unittest.TestCase):
         self.assertEqual("Doe", self.user.last_name)
 
     def test_list_fields(self):
-        self.assertEqual(['first_name', 'last_name', 'email'], self.user.fields)
+        self.assertEqual(['email', 'first_name', 'last_name'], self.user.fields)
 
 class UserValidationTest(unittest.TestCase):
     def setUp(self):

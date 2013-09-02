@@ -1,7 +1,7 @@
 import unittest
 from tavi.base.documents import BaseDocument
 from tavi.documents import EmbeddedDocument
-from tavi.fields import EmbeddedField, ListField, StringField
+from tavi.fields import EmbeddedField, ListField, StringField, DateTimeField
 
 class BaseDocumentNoFieldsTest(unittest.TestCase):
     class NoFieldsSample(BaseDocument):
@@ -33,6 +33,8 @@ class BaseDocumentFieldsTest(unittest.TestCase):
     class Sample(BaseDocument):
         name = StringField("name", required=True)
         password = StringField("password", persist=False)
+        payment_type = StringField("payment_type")
+        created_at = DateTimeField("created_at")
 
     class SampleWithEmbeddedField(BaseDocument):
         name = StringField("name", required=True)
@@ -46,7 +48,7 @@ class BaseDocumentFieldsTest(unittest.TestCase):
         self.sample = self.Sample()
 
     def test_get_fields(self):
-        self.assertEqual(["name"], self.sample.fields)
+        self.assertEqual(["name", "payment_type", "created_at"], self.sample.fields)
 
     def test_get_errors(self):
         self.sample.name = None
@@ -103,7 +105,11 @@ class BaseDocumentFieldsTest(unittest.TestCase):
 
     def test_get_data(self):
         sample = self.Sample(name="John")
-        self.assertEqual({ "name": "John" }, sample.data)
+        self.assertEqual({
+            "name": "John",
+            "payment_type": None,
+            "created_at": None
+        }, sample.data)
 
     def test_get_data_with_single_embedded_field(self):
         sample = self.SampleWithEmbeddedField(name="John")

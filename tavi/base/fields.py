@@ -14,6 +14,9 @@ class BaseField(object):
                  default is True
 
     """
+
+    _creation_counter = 0
+
     def __init__(self, name, required=False, default=None, inclusion=None,
             persist=True):
         self.name = name
@@ -22,6 +25,8 @@ class BaseField(object):
         self.default = default
         self.inclusion = inclusion
         self.persist = persist
+        self.creation_order = BaseField._creation_counter
+        BaseField._creation_counter += 1
 
     def __get__(self, instance, owner):
         if self.attribute_name not in instance.__dict__ and self.default:

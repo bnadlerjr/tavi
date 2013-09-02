@@ -25,10 +25,13 @@ class BaseDocumentMetaClass(type):
     def __init__(cls, name, bases, attrs):
         super(BaseDocumentMetaClass, cls).__init__(name, bases, attrs)
 
-        cls._fields = frozenset(
-            [name for name, value in attrs.iteritems() if
-                isinstance(value, BaseField) and value.persist]
+        sorted_fields = sorted(
+            [field for field in attrs.iteritems() if isinstance(field[1],
+                BaseField) and field[1].persist],
+            key = lambda i: i[1].creation_order
         )
+
+        cls._fields = [name for name, _ in sorted_fields]
 
 class BaseDocument(object):
     """Base class for Mongo Documents. Provides basic field support."""
@@ -58,7 +61,7 @@ class BaseDocument(object):
     @property
     def fields(self):
         """Returns the list of fields for the Document."""
-        return list(self._fields)
+        return self._fields
 
     @property
     def valid(self):
