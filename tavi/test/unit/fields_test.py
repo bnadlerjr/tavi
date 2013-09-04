@@ -1,4 +1,5 @@
 import unittest
+from bson import ObjectId
 from datetime import datetime
 from tavi import fields
 from tavi.documents import Document, EmbeddedDocument
@@ -217,6 +218,35 @@ class IntegerFieldTest(unittest.TestCase):
             "My Integer is too small (minimum is 10)"],
             t.errors.full_messages
         )
+
+class ObjectIdFieldTest(unittest.TestCase):
+    def test_sets_and_gets_object_id(self):
+        class Target(object):
+            f = fields.ObjectIdField("my_field")
+            errors = Errors()
+
+        t, value = Target(), ObjectId()
+        t.f = value
+        self.assertEqual(value, t.f)
+
+    def test_casts_value_as_object_id_if_string(self):
+        class Target(object):
+            f = fields.ObjectIdField("my_field")
+            errors = Errors()
+
+        t, value = Target(), ObjectId()
+        t.f = str(value)
+        self.assertEqual(value, t.f)
+
+    def test_validates_is_object_id(self):
+        class Target(object):
+            f = fields.ObjectIdField("my_field")
+            errors = Errors()
+
+        t = Target()
+        t.f = "not an object ID"
+        self.assertEqual(["My Field must be a valid Object Id"],
+            t.errors.full_messages)
 
 class StringFieldTest(unittest.TestCase):
     def setUp(self):
