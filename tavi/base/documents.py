@@ -11,9 +11,9 @@ def get_field_attr(cls, field):
     """
     value = getattr(cls, field)
     if isinstance(value, BaseDocument):
-        return value.data
+        return value.field_values
     if isinstance(value, collections.MutableSequence):
-        return [v.data for v in value]
+        return [v.field_values for v in value]
     else:
         return value
 
@@ -46,7 +46,7 @@ class BaseDocument(object):
                 field_value.owner = self
 
     @property
-    def data(self):
+    def field_values(self):
         """Returns a dictionary containing all fields and their values."""
         return { field: get_field_attr(self, field) for field in self.fields }
 
@@ -74,9 +74,9 @@ class BaseDocument(object):
 
         """
         if fields:
-            return dumps({ field: self.data[field] for field in fields })
+            return dumps({ field: self.field_values[field] for field in fields })
         else:
-            return dumps(self.data)
+            return dumps(self.field_values)
 
     @classmethod
     def from_json(cls, json_str):

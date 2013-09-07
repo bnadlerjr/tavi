@@ -143,7 +143,7 @@ class Document(BaseDocument):
             operation = "UPDATE"
             with timer:
                 result = collection.update({ "_id": self._id },
-                    { "$set": self.data })
+                    { "$set": self.field_values })
 
             if result.get("err"):
                 logger.error(result.get("err"))
@@ -152,11 +152,11 @@ class Document(BaseDocument):
             self.__update_timestamps("created_at", now)
 
             with timer:
-                self._id = collection.insert(self.data)
+                self._id = collection.insert(self.field_values)
 
         logger.info("(%ss) %s %s %s, %s",
             timer.duration_in_seconds(), self.__class__.__name__, operation,
-            self.data, self._id)
+            self.field_values, self._id)
         return True
 
     def __update_timestamps(self, name, timestamp):

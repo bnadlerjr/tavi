@@ -20,8 +20,8 @@ class BaseDocumentNoFieldsTest(unittest.TestCase):
     def test_valid(self):
         self.assertEqual(True, self.no_fields_sample.valid)
 
-    def test_get_data(self):
-        self.assertEqual({}, self.no_fields_sample.data)
+    def test_get_field_values(self):
+        self.assertEqual({}, self.no_fields_sample.field_values)
 
 # --------------------------------------------------------------------------- #
 
@@ -103,15 +103,15 @@ class BaseDocumentFieldsTest(unittest.TestCase):
         self.assertEqual("Walter", user_b.first_name)
         self.assertEqual("White", user_b.last_name)
 
-    def test_get_data(self):
+    def test_get_field_values(self):
         sample = self.Sample(name="John")
         self.assertEqual({
             "name": "John",
             "payment_type": None,
             "created_at": None
-        }, sample.data)
+        }, sample.field_values)
 
-    def test_get_data_with_single_embedded_field(self):
+    def test_get_field_values(self):
         sample = self.SampleWithEmbeddedField(name="John")
         sample.address.street = "123 Elm St."
         sample.address.city = "Anywhere"
@@ -121,9 +121,9 @@ class BaseDocumentFieldsTest(unittest.TestCase):
             "address": {
                 "street": "123 Elm St.",
                 "city": "Anywhere"
-            } }, sample.data)
+            } }, sample.field_values)
 
-    def test_get_data_with_embedded_list_field(self):
+    def test_get_field_values(self):
         sample = self.SampleWithEmbeddedListField()
         address = Address(street="123 Elm Street", city="Anywhere")
 
@@ -133,4 +133,4 @@ class BaseDocumentFieldsTest(unittest.TestCase):
             "addresses": [{
                 "street": "123 Elm Street",
                 "city": "Anywhere"
-            }]}, sample.data)
+            }]}, sample.field_values)
