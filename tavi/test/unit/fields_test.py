@@ -5,6 +5,23 @@ from tavi import fields
 from tavi.documents import Document, EmbeddedDocument
 from tavi.errors import TaviTypeError, Errors
 
+class BooleanFieldTest(unittest.TestCase):
+    def test_validates_is_boolean(self):
+        class Target(object):
+            f = fields.BooleanField("my_boolean")
+            errors = Errors()
+
+        t = Target()
+        t.f = True
+        self.assertEqual(0, t.errors.count)
+
+        t.f = None
+        self.assertEqual(["My Boolean must be a valid boolean"],
+            t.errors.full_messages)
+
+        t.f = False
+        self.assertEqual(0, t.errors.count)
+
 class DateTimeFieldTest(unittest.TestCase):
     def test_validates_is_datetime(self):
         class Target(object):

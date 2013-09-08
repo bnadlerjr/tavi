@@ -8,6 +8,17 @@ from tavi.base.fields import BaseField
 from tavi.documents import EmbeddedDocument
 from tavi.errors import TaviTypeError
 
+class BooleanField(BaseField):
+    """Represents a boolean field for a Mongo Document. Supports all the
+    validations of *BaseField*.
+
+    """
+    def validate(self, instance, value):
+        super(BooleanField, self).validate(instance, value)
+
+        if not isinstance(value, bool):
+            instance.errors.add(self.name, "must be a valid boolean")
+
 class DateTimeField(BaseField):
     """Represents a naive datetime for a Mongo Document.
     Supports all the validations in *BaseField*.
