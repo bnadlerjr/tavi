@@ -274,6 +274,15 @@ class ObjectIdFieldTest(unittest.TestCase):
         self.assertEqual(["My Field must be a valid Object Id"],
             t.errors.full_messages)
 
+    def test_validates_if_none(self):
+        class Target(object):
+            f = fields.ObjectIdField("my_field")
+            errors = Errors()
+
+        t = Target()
+        t.f = None
+        self.assertEqual([], t.errors.full_messages)
+
 class StringFieldTest(unittest.TestCase):
     def setUp(self):
         super(StringFieldTest, self).setUp()

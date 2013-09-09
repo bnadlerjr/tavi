@@ -114,8 +114,9 @@ class ObjectIdField(BaseField):
         """Validates the field."""
         super(ObjectIdField, self).validate(instance, value)
 
-        if not isinstance(value, ObjectId):
-            instance.errors.add(self.name, "must be a valid Object Id")
+        if value is not None:
+            if not isinstance(value, ObjectId):
+                instance.errors.add(self.name, "must be a valid Object Id")
 
 class StringField(BaseField):
     """Represents a String field for a Mongo Document.
