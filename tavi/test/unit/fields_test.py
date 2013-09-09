@@ -255,6 +255,15 @@ class ObjectIdFieldTest(unittest.TestCase):
         t.f = str(value)
         self.assertEqual(value, t.f)
 
+    def test_does_not_cast_to_object_id_if_none(self):
+        class Target(object):
+            f = fields.ObjectIdField("my_field")
+            errors = Errors()
+
+        t = Target()
+        t.f = None
+        self.assertIsNone(t.f)
+
     def test_validates_is_object_id(self):
         class Target(object):
             f = fields.ObjectIdField("my_field")

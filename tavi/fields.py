@@ -100,10 +100,13 @@ class ObjectIdField(BaseField):
 
     """
     def __set__(self, instance, raw_value):
-        try:
-            value = ObjectId(raw_value)
-        except InvalidId:
-            value = raw_value
+        if raw_value is not None:
+            try:
+                value = ObjectId(raw_value)
+            except InvalidId:
+                value = raw_value
+        else:
+            value = None
 
         super(ObjectIdField, self).__set__(instance, value)
 
