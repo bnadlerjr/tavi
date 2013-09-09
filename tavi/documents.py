@@ -183,3 +183,6 @@ class EmbeddedDocument(BaseDocument):
     def __init__(self, **kwargs):
         super(EmbeddedDocument, self).__init__(**kwargs)
         self.owner = None
+
+    def __eq__(self, other):
+        return self.field_values == other.field_values
