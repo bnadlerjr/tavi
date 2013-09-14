@@ -17,13 +17,13 @@ or clone the project and run:
 Define your models:
 
 ```python
-from tavi import document, fields
+import tavi
 
-class Product(document.Document):
-    name        = fields.StringField("name", required=True)
-    sku         = fields.StringField("sku", required=True)
-    description = fields.StringField("description", required=True)
-    price       = fields.FloatField("price", min_value=0)
+class Product(tavi.documents.Document):
+    name        = tavi.fields.StringField("name", required=True)
+    sku         = tavi.fields.StringField("sku", required=True)
+    description = tavi.fields.StringField("description", required=True)
+    price       = tavi.fields.FloatField("price", min_value=0)
 ```
 
 Use your models to create and find documents:
@@ -58,20 +58,6 @@ For more details see [Using Tavi](#using-tavi).
 
 * pymongo >= 2.5.2
 * inflection >= 0.2.0
-
-### Contributing
-
-#### Issues / Roadmap
-
-Use GitHub [issues](https://github.com/bnadlerjr/tavi/issues) for reporting bugs and feature requests. This library is meant to be lightweight so I probably won't be adding many features but feel free to submit pull requests for any critical features you think may be missing.
-
-#### Patches / Pull Requests
-
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a future version unintentionally.
-* Commit, do not mess with version or history (if you want to have your own version that is fine, but please bump version in a commit by itself I can ignore when I pull).
-* Send me a pull request. Bonus points for topic branches.
 
 ## <a id="using-tavi"></a>Using Tavi
 
@@ -447,3 +433,17 @@ User.collection
 ```
 
 You will get back a handle to the `users` collection. This collection is a [pymongo collection](http://api.mongodb.org/python/current/api/pymongo/collection.html) and supports all of it's methods.
+
+### Contributing
+
+#### Issues / Roadmap
+
+Use GitHub [issues](https://github.com/bnadlerjr/tavi/issues) for reporting bugs and feature requests. This library is meant to be lightweight so I probably won't be adding many features but feel free to submit pull requests for any critical features you think may be missing.
+
+#### Patches / Pull Requests
+
+* Fork the project.
+* Make your feature addition or bug fix.
+* Add tests for it. This is important so I don't break it in a future version unintentionally.
+* Commit, do not mess with version or history (if you want to have your own version that is fine, but please bump version in a commit by itself I can ignore when I pull).
+* Send me a pull request. Bonus points for topic branches.
