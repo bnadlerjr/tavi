@@ -76,14 +76,14 @@ tavi.connection.Connection.setup("my_test_database", host="mongodb://localhost:2
 
 ### Defining Documents
 
-Documents are the building blocks for defining your models. An instantiated [```tavi.document.Document```](#documents) class represents a single document in a MongoDB collection. It also provides a number of class methods used for querying the collection itself. You can embed documents inside other documents (rather than in their own collections) using the [```tavi.document.EmbeddedDocument```](#embedded-documents) class.
+Documents are the building blocks for defining your models. An instantiated [```tavi.documents.Document```](#documents) class represents a single document in a MongoDB collection. It also provides a number of class methods used for querying the collection itself. You can embed documents inside other documents (rather than in their own collections) using the [```tavi.documents.EmbeddedDocument```](#embedded-documents) class.
 
 ### <a id="documents"></a>Documents
 
-Document objects inherit from ```tavi.document.Document```. You can [persist](#saving-documents) them to collections and they can contain embedded documents. They also come with support for [validations](#validations) and [querying](#finding-documents).
+Document objects inherit from ```tavi.documents.Document```. You can [persist](#saving-documents) them to collections and they can contain embedded documents. They also come with support for [validations](#validations) and [querying](#finding-documents).
 
 ```python
-class Order(tavi.document.Document):
+class Order(tavi.documents.Document):
     name     = tavi.fields.StringField("name", required=True)
     address  = tavi.fields.EmbeddedField("address", Address)
     email    = tavi.fields.StringField("email", required=True)
@@ -125,7 +125,7 @@ Document objects have several attributes for retrieving information about them:
 Document objects can be (de-)serialized from/to JSON. Under the hood it delegates to pymongo's [`bson.json_util`](http://api.mongodb.org/python/current/api/bson/json_util.html). The `#to_json` and `from_json` methods convert to JSON and from JSON, respectively. In addition, the `#to_json` instance method can be given an optional array of fields to convert to JSON. By default, all fields are serialized.
 
 ```python
-class Order(tavi.document.Document):
+class Order(tavi.documents.Document):
     name     = tavi.fields.StringField("name", required=True)
     address  = tavi.fields.EmbeddedField("address", Address)
     email    = tavi.fields.StringField("email", required=True)
@@ -141,10 +141,10 @@ class Order(tavi.document.Document):
 
 ### <a id="embedded-documents"></a>Embedded Documents
 
-Embedded documents are almost identical to Documents with one exception: they are saved inside of another document instead of in their own collection. They inherit from ```tavi.document.EmbeddedDocument``` and have support for [validations](#validations).
+Embedded documents are almost identical to Documents with one exception: they are saved inside of another document instead of in their own collection. They inherit from ```tavi.documents.EmbeddedDocument``` and have support for [validations](#validations).
 
 ```python
-class Address(tavi.document.EmbeddedDocument):
+class Address(tavi.documents.EmbeddedDocument):
     street      = tavi.fields.StringField("street")
     city        = tavi.fields.StringField("city")
     state       = tavi.fields.StringField("state")
@@ -420,10 +420,10 @@ The database object that is returned is a [pymongo database](http://api.mongodb.
 You can access a collection directly from a document model. Given a document model:
 
 ```python
-class User(Document):
-    email = StringField("email")
-    first_name = StringField("first_name")
-    last_name = StringField("last_name")
+class User(tavi.documents.Document):
+    email =      tavi.fields.StringField("email")
+    first_name = tavi.fields.StringField("first_name")
+    last_name =  tavi.fields.StringField("last_name")
 ```
 
 If you call
