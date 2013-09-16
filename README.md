@@ -53,7 +53,6 @@ Spam
 
 For more details see [Using Tavi](#using-tavi).
 
-
 ### Dependencies
 
 * pymongo >= 2.5.2
@@ -62,16 +61,20 @@ For more details see [Using Tavi](#using-tavi).
 ## <a id="using-tavi"></a>Using Tavi
 
 ### Connecting to MongoDB
-MongoDB connections are handled by the `tavi.connection.Connection` class (which delegates to pymongo). Set up a connection like this:
+MongoDB connections are handled by the `tavi.Connection` class (which delegates to pymongo). Set up a connection like this:
 
 ```python
-tavi.connection.Connection.setup("my_test_database", host="localhost", port=27017)
+import tavi
+
+tavi.Connection.setup("my_test_database", host="localhost", port=27017)
 ```
 
 Alternatively, you can also use the MongoDB URI format:
 
 ```python
-tavi.connection.Connection.setup("my_test_database", host="mongodb://localhost:27017/")
+import tavi
+
+tavi.Connection.setup("my_test_database", host="mongodb://localhost:27017/")
 ```
 
 ### Defining Documents
@@ -83,6 +86,8 @@ Documents are the building blocks for defining your models. An instantiated [```
 Document objects inherit from ```tavi.documents.Document```. You can [persist](#saving-documents) them to collections and they can contain embedded documents. They also come with support for [validations](#validations) and [querying](#finding-documents).
 
 ```python
+import tavi
+
 class Order(tavi.documents.Document):
     name     = tavi.fields.StringField("name", required=True)
     address  = tavi.fields.EmbeddedField("address", Address)
@@ -125,6 +130,8 @@ Document objects have several attributes for retrieving information about them:
 Document objects can be (de-)serialized from/to JSON. Under the hood it delegates to pymongo's [`bson.json_util`](http://api.mongodb.org/python/current/api/bson/json_util.html). The `#to_json` and `from_json` methods convert to JSON and from JSON, respectively. In addition, the `#to_json` instance method can be given an optional array of fields to convert to JSON. By default, all fields are serialized.
 
 ```python
+import tavi
+
 class Order(tavi.documents.Document):
     name     = tavi.fields.StringField("name", required=True)
     address  = tavi.fields.EmbeddedField("address", Address)
@@ -144,6 +151,8 @@ class Order(tavi.documents.Document):
 Embedded documents are almost identical to Documents with one exception: they are saved inside of another document instead of in their own collection. They inherit from ```tavi.documents.EmbeddedDocument``` and have support for [validations](#validations).
 
 ```python
+import tavi
+
 class Address(tavi.documents.EmbeddedDocument):
     street      = tavi.fields.StringField("street")
     city        = tavi.fields.StringField("city")
@@ -153,7 +162,7 @@ class Address(tavi.documents.EmbeddedDocument):
 
 ### Fields
 
-Fields are how Tavi maps the attributes in your objects to attributes in the document for your collections in MongoDB. All fields inherit from ``tavi.base.field.BaseField`` which provides some common [validations](#validations).
+Fields are how Tavi maps the attributes in your objects to attributes in the document for your collections in MongoDB. All fields inherit from ``tavi.base.fields.BaseField`` which provides some common [validations](#validations).
 
 #### <a id="basic-fields"></a>Basic Fields
 
@@ -186,7 +195,7 @@ Note that leading and trailing whitespace is automatically stripped from StringF
 
 #### <a id="custom-fields"></a>Custom Fields
 
-If you need to add your own field types you may inherit from either ``tavi.base.field.BaseField`` or one of the other field types. Any classes that inherit from ``tavi.base.field.BaseField`` must implement the ``validate`` method and call ``super`` in order for validations to work. For example:
+If you need to add your own field types you may inherit from either ``tavi.base.fields.BaseField`` or one of the other field types. Any classes that inherit from ``tavi.base.fields.BaseField`` must implement the ``validate`` method and call ``super`` in order for validations to work. For example:
 
 ```python
     class MyCustomField(tavi.base.field.BaseField):
@@ -200,19 +209,21 @@ If you need to add your own field types you may inherit from either ``tavi.base.
 `tavi.fields.EmbeddedField`'s are how embedded documents are placed in documents. For example, let's say we have defined an embedded document for an address.
 
 ```python
-class Address(EmbeddedDocument):
-    street      = StringField("street")
-    city        = StringField("city")
-    state       = StringField("state")
-    postal_code = StringField("postal_code")
+import tavi
+
+class Address(tavi.documents.EmbeddedDocument):
+    street      = tavi.fields.StringField("street")
+    city        = tavi.fields.StringField("city")
+    state       = tavi.fields.StringField("state")
+    postal_code = tavi.fields.StringField("postal_code")
 ```
 
 This embedded document can be placed into a user document using a `tavi.fields.EmbeddedField`.
 
 ```python
-class User(Document):
-    name = StringField("name")
-    address = EmbeddedField("address", Address)
+class User(tavi.documents.Document):
+    name    = tavi.fields.StringField("name")
+    address = tavi.fields.EmbeddedField("address", Address)
 ```
 
 The address field can now be accessed through the user object...
@@ -232,16 +243,18 @@ user.address.postal_code = "00000"
 `tavi.fields.ListFields` are used for embedding a list of Embedded fields. For example:
 
 ```python
-class OrderLine(EmbeddedDocument):
-    quantity    = fields.IntegerField("quantity")
-    total_price = fields.FloatField("total_price")
+import tavi
+
+class OrderLine(tavi.documents.EmbeddedDocument):
+    quantity    = tavi.fields.IntegerField("quantity")
+    total_price = tavi.fields.FloatField("total_price")
 
 class Order(Document):
-    name        = fields.StringField("name")
-    address     = fields.EmbeddedField("address", Address)
-    email       = fields.StringField("email")
-    pay_type    = fields.StringField("pay_type")
-    order_lines = fields.ListField("order_lines")
+    name        = tavi.fields.StringField("name")
+    address     = tavi.fields.EmbeddedField("address", Address)
+    email       = tavi.fields.StringField("email")
+    pay_type    = tavi.fields.StringField("pay_type")
+    order_lines = tavi.fields.ListField("order_lines")
 ```
 
 In the above example, `OrderLine` is an `EmbeddedDocument` and `Order` is it's container `Document`. An `OrderLine` object can be appended to an `Order` like this:
@@ -277,7 +290,9 @@ Document objects support field validations through two attributes:
 `tavi.errors.Errors` is a dictionary-like object with the following interface:
 
 ```python
->>> errors = Errors()
+import tavi
+
+>>> errors = tavi.errors.Errors()
 
 >>> errors.add("email", "is required")
 
@@ -302,7 +317,9 @@ Document objects support field validations through two attributes:
 In practice, fields will handle adding and clearing errors themselves.
 
 ```python
-class User(Document)
+import tavi
+
+class User(tavi.documents.Document)
     email = StringField("email", required=True)
 ```
 
@@ -336,19 +353,24 @@ Knowing how `tavi.errors.Errors` works is useful when you need to define your ow
 
 All fields that inherit from `tavi.base.fields.BaseField` support the following validations:
 
-required  -- indicates if the field is required; default is `False`
-default   -- default value for the field; `None` if not given
-inclusion -- validates field value is a member of specified list
-persist   -- boolean indicating if field should be persisted to Mongo; default is True
+required: indicates if the field is required; default is `False`
+
+default: default value for the field; `None` if not given
+
+inclusion: validates field value is a member of specified list
+
+persist: boolean indicating if field should be persisted to Mongo; default is True
 
 Here are some examples:
 
 ```python
-class User(Document):
-    email = StringField("email", required=True)
-    age = IntegerField("age", default=0)
-    pay_type = StringField("pay_type", inclusion=["Mastercard", "Visa"])
-    password = StringField("password", persist=False)
+import tavi
+
+class User(tavi.documents.Document):
+    email    = tavi.fields.StringField("email", required=True)
+    age      = tavi.fields.IntegerField("age", default=0)
+    pay_type = tavi.fields.StringField("pay_type", inclusion=["Mastercard", "Visa"])
+    password = tavi.fields.StringField("password", persist=False)
 ```
 
 Refer to [Basic Fields](#basic-fields) for a list of field types and their validations.
@@ -372,9 +394,11 @@ Document objects also support two convenience finder methods: `find_by_id` and `
 You may also want to define your own custom finder methods. I recommend you delegate to the main finder methods like this:
 
 ```python
-class User(Document):
-    email = StringField("email")
-    last_name = StringField("last_name")
+import tavi
+
+class User(tavi.documents.Document):
+    email     = tavi.fields.StringField("email")
+    last_name = tavi.fields.StringField("last_name")
 
     @classmethod
     def find_by_email(cls, email)
@@ -420,6 +444,8 @@ The database object that is returned is a [pymongo database](http://api.mongodb.
 You can access a collection directly from a document model. Given a document model:
 
 ```python
+import tavi
+
 class User(tavi.documents.Document):
     email =      tavi.fields.StringField("email")
     first_name = tavi.fields.StringField("first_name")
