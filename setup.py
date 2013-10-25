@@ -18,7 +18,7 @@ from setuptools import setup
 
 setup(
     name='Tavi',
-    version='0.0.2',
+    version='0.0.3',
     author='Bob Nadler Jr.',
     author_email='bnadlerjr@gmail.com',
     packages=['tavi'],
@@ -26,6 +26,8 @@ setup(
     license='LICENSE.txt',
     description='Super thin Mongo object mapper for Python.',
     long_description=long_description,
+    include_package_data=True,
+    zip_safe=False,
     install_requires=[
         "inflection >= 0.2.0",
         "pymongo >= 2.5.2"
