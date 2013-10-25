@@ -21,7 +21,7 @@ setup(
     version='0.0.1',
     author='Bob Nadler Jr.',
     author_email='bnadlerjr@gmail.com',
-    packages=['tavi', 'tavi.test'],
+    packages=['tavi'],
     url='https://github.com/bnadlerjr/tavi',
     license='LICENSE.txt',
     description='Super thin Mongo object mapper for Python.',
