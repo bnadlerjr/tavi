@@ -18,10 +18,10 @@ from setuptools import setup
 
 setup(
     name='Tavi',
-    version='0.0.3',
+    version='0.0.4',
     author='Bob Nadler Jr.',
     author_email='bnadlerjr@gmail.com',
-    packages=['tavi'],
+    packages=['tavi', 'tavi.base', 'tavi.utils'],
     url='https://github.com/bnadlerjr/tavi',
     license='LICENSE.txt',
     description='Super thin Mongo object mapper for Python.',
