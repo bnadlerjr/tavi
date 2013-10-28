@@ -127,7 +127,7 @@ Document objects have several attributes for retrieving information about them:
 
 #### (De-)Serialization
 
-Document objects can be (de-)serialized from/to JSON. Under the hood it delegates to pymongo's [`bson.json_util`](http://api.mongodb.org/python/current/api/bson/json_util.html). The `#to_json` and `from_json` methods convert to JSON and from JSON, respectively. In addition, the `#to_json` instance method can be given an optional array of fields to convert to JSON. By default, all fields are serialized.
+Document objects can be (de-)serialized from/to JSON. Under the hood it delegates to pymongo's [`bson.json_util`](http://api.mongodb.org/python/current/api/bson/json_util.html). The `#to_json` and `#from_json` methods convert to JSON and from JSON, respectively. In addition, the `#to_json` instance method can be given an optional array of fields to convert to JSON. By default, all fields are serialized.
 
 ```python
 import tavi
@@ -195,7 +195,7 @@ Note that leading and trailing whitespace is automatically stripped from StringF
 
 #### <a id="custom-fields"></a>Custom Fields
 
-If you need to add your own field types you may inherit from either ``tavi.base.fields.BaseField`` or one of the other field types. Any classes that inherit from ``tavi.base.fields.BaseField`` must implement the ``validate`` method and call ``super`` in order for validations to work. For example:
+If you need to add your own field types you may inherit from either ``tavi.base.fields.BaseField`` or one of the other field types. Any classes that inherit from ``tavi.base.fields.BaseField`` must implement the ``#validate`` method and call ``#super`` in order for validations to work. For example:
 
 ```python
     class MyCustomField(tavi.base.field.BaseField):
@@ -385,11 +385,11 @@ If the document object has a field named `created_at`, this field's value will b
 
 #### <a id="finding-documents"></a>Finding Documents
 
-Document objects can be retrieved using finder classmethods. There are two main finder methods: `find` and `find_one`. These are wrappers around the pymongo `find` and `find_one` methods and support all the same arguments. The difference is these methods wrap the return result into a Document object.
+Document objects can be retrieved using finder classmethods. There are two main finder methods: `#find` and `#find_one`. These are wrappers around the pymongo `#find` and `#find_one` methods and support all the same arguments. The difference is these methods wrap the return result into a Document object.
 
 It is important to note that when using these methods, if you restrict the fields that are returned, the resulting document object(s) will have these fields set to `None`. If you later try to persist one of these objects, you will overwrite the value of the field. Therefore I recommend that you [use the collection directly](#using-pymongo) and have it return a dictionary result set.
 
-Document objects also support two convenience finder methods: `find_by_id` and `find_all` which delegate to `find_one` and `find`, respectively.
+Document objects also support two convenience finder methods: `#find_by_id` and `#find_all` which delegate to `#find_one` and `#find`, respectively.
 
 You may also want to define your own custom finder methods. I recommend you delegate to the main finder methods like this:
 
@@ -413,7 +413,7 @@ class User(tavi.documents.Document):
 
 This way you will not have to wrap the results as document objects, since it will be done for you.
 
-Document objects also support a `count` method that will return the total number of documents in the collection.
+Document objects also support a `#count` method that will return the total number of documents in the collection.
 
 #### Deleting Documents
 
