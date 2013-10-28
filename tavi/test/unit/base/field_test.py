@@ -37,9 +37,9 @@ class BaseFieldTest(unittest.TestCase):
         t.f = 42
         self.assertEqual(42, t.f)
 
-    def test_validates_inclusion(self):
+    def test_validates_choices(self):
         class Target(object):
-            f = BaseField("my_field", inclusion=['type_a', 'type_b'])
+            f = BaseField("my_field", choices=['type_a', 'type_b'])
             errors = Errors()
 
         t = Target()
