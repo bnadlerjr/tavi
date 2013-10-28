@@ -357,7 +357,7 @@ required: indicates if the field is required; default is `False`
 
 default: default value for the field; `None` if not given
 
-inclusion: validates field value is a member of specified list
+choices: validates field value is a member of specified list
 
 persist: boolean indicating if field should be persisted to Mongo; default is True
 
@@ -369,7 +369,7 @@ import tavi
 class User(tavi.documents.Document):
     email    = tavi.fields.StringField("email", required=True)
     age      = tavi.fields.IntegerField("age", default=0)
-    pay_type = tavi.fields.StringField("pay_type", inclusion=["Mastercard", "Visa"])
+    pay_type = tavi.fields.StringField("pay_type", choices=["Mastercard", "Visa"])
     password = tavi.fields.StringField("password", persist=False)
 ```
 
