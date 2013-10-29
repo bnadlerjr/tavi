@@ -32,6 +32,7 @@ class BaseDocumentMetaClass(type):
         )
 
         cls._fields = [name for name, _ in sorted_fields]
+        cls._field_descriptors = dict(sorted_fields)
 
 class BaseDocument(object):
     """Base class for Mongo Documents. Provides basic field support."""
@@ -40,7 +41,8 @@ class BaseDocument(object):
     def __init__(self, **kwargs):
         self._errors = Errors()
         for field in self.fields:
-            setattr(self, field, kwargs.get(field, None))
+            field_default = self._field_descriptors[field].default
+            setattr(self, field, kwargs.get(field, field_default))
             field_value = getattr(self, field)
             if hasattr(field_value, "owner"):
                 field_value.owner = self
