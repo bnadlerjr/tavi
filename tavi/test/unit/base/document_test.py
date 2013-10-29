@@ -134,3 +134,13 @@ class BaseDocumentFieldsTest(unittest.TestCase):
                 "street": "123 Elm Street",
                 "city": "Anywhere"
             }]}, sample.field_values)
+
+    class SampleWithDefaultedField(BaseDocument):
+        name = StringField("name", default="Cthulhu")
+
+    def test_field_default_values(self):
+        sample = self.SampleWithDefaultedField()
+
+        self.assertEqual("Cthulhu", sample.name)
+
+
