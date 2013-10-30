@@ -478,6 +478,28 @@ class EmbeddedFieldTest(unittest.TestCase):
         t.save()
         self.assertIsNotNone(t.find())
 
+    def test_can_set_field_to_none(self):
+        class Address(EmbeddedDocument):
+            field = fields.StringField("field")
+
+        class Target(Document):
+            address = fields.EmbeddedField("address", Address)
+        t = Target()
+        t.address = None
+        self.assertIsNone(t.address)
+
+    def test_can_be_assigned_after_being_assigned_to_none(self):
+        class Address(EmbeddedDocument):
+            field = fields.StringField("field")
+
+        class Target(Document):
+            address = fields.EmbeddedField("address", Address)
+        t = Target()
+        t.address = None
+        t.address = Address()
+        self.assertIsNotNone(t.address)
+
+
 class ListFieldTest(unittest.TestCase):
     def test_sets_default_as_empty_list(self):
         class OrderLine(EmbeddedDocument):

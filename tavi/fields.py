@@ -203,9 +203,12 @@ class EmbeddedField(BaseField):
 
     def __set__(self, instance, value):
         if value:
+            if not self.value: self.value = self.doc_class()
             for field in value.fields:
                 embedded_value = getattr(value, field, None)
                 setattr(self.value, field, embedded_value)
+        else:
+            self.value = value
 
 
 class ListField(BaseField):
