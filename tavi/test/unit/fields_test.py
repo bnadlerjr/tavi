@@ -455,6 +455,28 @@ class EmbeddedFieldTest(unittest.TestCase):
         t = Target()
         self.assertEqual(t, t.f.owner)
 
+    def test_embedded_can_be_reloaded(self):
+        class Address(EmbeddedDocument):
+            field = fields.StringField("field")
+
+        class Target(Document):
+            address = fields.EmbeddedField("address", Address)
+
+        t = Target()
+        t.address = Address()
+        t.save()
+        self.assertIsNotNone(t.find())
+
+    def test_embedded_can_be_initialized(self):
+        class Address(EmbeddedDocument):
+            field = fields.StringField("field")
+
+        class Target(Document):
+            address = fields.EmbeddedField("address", Address)
+
+        t = Target(address=Address())
+        t.save()
+        self.assertIsNotNone(t.find())
 
 class ListFieldTest(unittest.TestCase):
     def test_sets_default_as_empty_list(self):

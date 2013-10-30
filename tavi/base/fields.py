@@ -9,7 +9,7 @@ class BaseField(object):
 
     required  -- indicates if the field is required; default is *False*
     default   -- default value for the field; *None* if not given
-    inclusion -- validates field value is a member of specified list
+    choices -- validates field value is a member of specified list
     persist   -- boolean indicating if field should be persisted to Mongo;
                  default is True
 
@@ -17,13 +17,17 @@ class BaseField(object):
 
     _creation_counter = 0
 
-    def __init__(self, name, required=False, default=None, inclusion=None,
+    def setFieldOnObject(self, obj, value):
+        if not value: value = self.default
+        setattr(obj, self.name, value)
+
+    def __init__(self, name, required=False, default=None, choices=None,
             persist=True):
         self.name = name
         self.attribute_name = "_%s" % name
         self.required = required
         self.default = default
-        self.inclusion = inclusion
+        self.choices = choices
         self.persist = persist
         self.creation_order = BaseField._creation_counter
         BaseField._creation_counter += 1
@@ -49,5 +53,5 @@ class BaseField(object):
         if self.required and None == value:
             instance.errors.add(self.name, "is required")
 
-        if self.inclusion and value not in self.inclusion:
+        if self.choices and value not in self.choices:
             instance.errors.add(self.name, "value must be in list")
