@@ -62,7 +62,7 @@ class BaseFieldTest(unittest.TestCase):
         self.assertEqual("my_field", self.field.name)
         self.assertEqual("another_field", another_field.name)
 
-    def test_invalid_default_value_is_not_allowed(self):
+    def test_default_value_is_validated(self):
         class TestField(BaseField):
             def validate(self, instance, value):
                 super(TestField, self).validate(instance, value)
@@ -70,13 +70,11 @@ class BaseFieldTest(unittest.TestCase):
                     instance.errors.add(self.name, "value cannot be -1")
 
         class Target(object):
-            f = TestField("afield", default=-1)
+            afield = TestField("afield", default=-1)
             errors = Errors()
 
         t = Target()
 
-        # the default value for field f is -1 which is not a valid value.
-        # what should happen when f is accessed before it is set?
-        self.assertNotEqual(-1, t.f)
+        self.assertEqual(-1, t.afield)
         self.assertEqual(1, t.errors.count)
 
