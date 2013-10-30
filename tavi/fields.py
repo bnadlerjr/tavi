@@ -177,16 +177,25 @@ class EmbeddedField(BaseField):
     is not a tavi.document.EmbeddedDocument.
 
     """
+
+    def setFieldOnObject(self, obj, value):
+        if not value: value = {}
+        if value.__class__ != self.doc_class:
+           value = self.doc_class(**value)
+        super(EmbeddedField, self).setFieldOnObject(obj, value)
+
     def __init__(self, name, doc):
         super(EmbeddedField, self).__init__(name)
         doc_instance = doc()
+
         if not isinstance(doc_instance, EmbeddedDocument):
             raise TaviTypeError(
-                "expected %s to be a subclass of "
-                "tavi.document.EmbeddedDocument" %
-                doc_instance.__class__
-            )
+                    "expected %s to be a subclass of "
+                    "tavi.document.EmbeddedDocument" %
+                    doc_instance.__class__
+                    )
 
+        self.doc_class = doc
         self.value = doc_instance
 
     def __get__(self, instance, owner):
@@ -197,6 +206,7 @@ class EmbeddedField(BaseField):
             for field in value.fields:
                 embedded_value = getattr(value, field, None)
                 setattr(self.value, field, embedded_value)
+
 
 class ListField(BaseField):
     """Represents a list of embedded document fields."""

@@ -17,6 +17,10 @@ class BaseField(object):
 
     _creation_counter = 0
 
+    def setFieldOnObject(self, obj, value):
+        if not value: value = self.default
+        setattr(obj, self.name, value)
+
     def __init__(self, name, required=False, default=None, choices=None,
             persist=True):
         self.name = name
