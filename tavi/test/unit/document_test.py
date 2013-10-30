@@ -237,3 +237,8 @@ class EmbeddedDocumentTest(unittest.TestCase):
 
         self.assertFalse(sample_a == sample_b)
         self.assertFalse(sample_b == sample_a)
+
+    def test_unequal_if_one_is_none(self):
+        s = self.Sample()
+
+        self.assertFalse(s == None)

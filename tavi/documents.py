@@ -185,4 +185,4 @@ class EmbeddedDocument(BaseDocument):
         self.owner = None
 
     def __eq__(self, other):
-        return self.field_values == other.field_values
+        return other and self.field_values == other.field_values
