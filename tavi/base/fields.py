@@ -30,7 +30,7 @@ class BaseField(object):
 
     def __get__(self, instance, owner):
         if self.attribute_name not in instance.__dict__ and self.default:
-            setattr(instance, self.attribute_name, self.default)
+            self.__set__(instance, self.default)
         return getattr(instance, self.attribute_name)
 
     def __set__(self, instance, value):

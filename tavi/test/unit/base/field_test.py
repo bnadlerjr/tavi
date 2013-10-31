@@ -61,3 +61,20 @@ class BaseFieldTest(unittest.TestCase):
         another_field = BaseField("another_field")
         self.assertEqual("my_field", self.field.name)
         self.assertEqual("another_field", another_field.name)
+
+    def test_default_value_is_validated(self):
+        class TestField(BaseField):
+            def validate(self, instance, value):
+                super(TestField, self).validate(instance, value)
+                if value == -1:
+                    instance.errors.add(self.name, "value cannot be -1")
+
+        class Target(object):
+            afield = TestField("afield", default=-1)
+            errors = Errors()
+
+        t = Target()
+
+        self.assertEqual(-1, t.afield)
+        self.assertEqual(1, t.errors.count)
+
