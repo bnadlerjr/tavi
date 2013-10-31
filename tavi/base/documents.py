@@ -41,10 +41,7 @@ class BaseDocument(object):
         self._errors = Errors()
         for field in self.fields:
             field_descriptor = self._field_descriptors[field]
-            field_default = field_descriptor.default
-
             field_descriptor.setFieldOnObject(self, kwargs.get(field))
-
             field_value = getattr(self, field)
             if hasattr(field_value, "owner"):
                 field_value.owner = self
