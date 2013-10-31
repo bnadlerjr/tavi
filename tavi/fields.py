@@ -178,12 +178,6 @@ class EmbeddedField(BaseField):
 
     """
 
-    def setFieldOnObject(self, obj, value):
-        if not value: value = {}
-        if value.__class__ != self.doc_class:
-           value = self.doc_class(**value)
-        super(EmbeddedField, self).setFieldOnObject(obj, value)
-
     def __init__(self, name, doc):
         super(EmbeddedField, self).__init__(name)
         doc_instance = doc()
