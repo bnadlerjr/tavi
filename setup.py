@@ -18,7 +18,7 @@ from setuptools import setup
 
 setup(
     name='Tavi',
-    version='0.0.6',
+    version='0.0.7',
     author='Bob Nadler Jr.',
     author_email='bnadlerjr@gmail.com',
     packages=['tavi', 'tavi.base', 'tavi.utils'],
