@@ -177,9 +177,8 @@ class EmbeddedField(BaseField):
     is not a tavi.document.EmbeddedDocument.
 
     """
-
-    def __init__(self, name, doc):
-        super(EmbeddedField, self).__init__(name)
+    def __init__(self, name, doc, **kwargs):
+        super(EmbeddedField, self).__init__(name, **kwargs)
         doc_instance = doc()
 
         if not isinstance(doc_instance, EmbeddedDocument):
@@ -190,7 +189,7 @@ class EmbeddedField(BaseField):
                     )
 
         self.doc_class = doc
-        self.value = doc_instance
+        self.value = self.default or doc_instance
 
     def __get__(self, instance, owner):
         return self.value

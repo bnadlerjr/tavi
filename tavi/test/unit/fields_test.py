@@ -499,6 +499,21 @@ class EmbeddedFieldTest(unittest.TestCase):
         t.address = Address()
         self.assertIsNotNone(t.address)
 
+    def test_can_set_default_value(self):
+        class Address(EmbeddedDocument):
+            afield = fields.StringField("afield")
+
+        defaultAddress = Address(afield="default")
+
+        class Target(Document):
+            address = fields.EmbeddedField("address", Address, default=defaultAddress)
+
+        t = Target()
+        self.assertEqual("default", t.address.afield)
+
+    def xtest_type_checking_on_default_value(self):
+        pass
+
 
 class ListFieldTest(unittest.TestCase):
     def test_sets_default_as_empty_list(self):
