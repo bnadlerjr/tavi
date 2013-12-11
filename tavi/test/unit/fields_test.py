@@ -8,7 +8,7 @@ from tavi.errors import TaviTypeError, Errors
 class BooleanFieldTest(unittest.TestCase):
     def test_validates_is_boolean(self):
         class Target(object):
-            f = fields.BooleanField("my_boolean")
+            f = fields.BooleanField("my_boolean", required=True)
             errors = Errors()
 
         t = Target()
@@ -16,11 +16,34 @@ class BooleanFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
         t.f = None
-        self.assertEqual(["My Boolean must be a valid boolean"],
+        self.assertEqual(["My Boolean is required"],
             t.errors.full_messages)
 
         t.f = False
         self.assertEqual(0, t.errors.count)
+
+        t.f = 13
+        self.assertEqual(["My Boolean must be a valid boolean"],
+            t.errors.full_messages)
+
+    def test_non_required_boolean(self):
+        class Target(object):
+            f = fields.BooleanField("my_boolean", required=False)
+            errors = Errors()
+
+        t = Target()
+        t.f = True
+        self.assertEqual(0, t.errors.count)
+
+        t.f = None
+        self.assertEqual(0, t.errors.count)
+
+        t.f = False
+        self.assertEqual(0, t.errors.count)
+
+        t.f = 13
+        self.assertEqual(["My Boolean must be a valid boolean"],
+            t.errors.full_messages)
 
 class DateTimeFieldTest(unittest.TestCase):
     def test_validates_is_datetime(self):

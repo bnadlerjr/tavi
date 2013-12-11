@@ -16,7 +16,7 @@ class BooleanField(BaseField):
     def validate(self, instance, value):
         super(BooleanField, self).validate(instance, value)
 
-        if not isinstance(value, bool):
+        if value and not isinstance(value, bool):
             instance.errors.add(self.name, "must be a valid boolean")
 
 class DateTimeField(BaseField):
