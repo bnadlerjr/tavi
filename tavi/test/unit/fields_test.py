@@ -7,7 +7,7 @@ from tavi.errors import TaviTypeError, Errors
 
 class BooleanFieldTest(unittest.TestCase):
     def test_validates_is_boolean(self):
-        class Target(object):
+        class Target(Document):
             f = fields.BooleanField("my_boolean", required=True)
             errors = Errors()
 
@@ -27,7 +27,7 @@ class BooleanFieldTest(unittest.TestCase):
             t.errors.full_messages)
 
     def test_non_required_boolean(self):
-        class Target(object):
+        class Target(Document):
             f = fields.BooleanField("my_boolean", required=False)
             errors = Errors()
 
@@ -47,7 +47,7 @@ class BooleanFieldTest(unittest.TestCase):
 
 class DateTimeFieldTest(unittest.TestCase):
     def test_validates_is_datetime(self):
-        class Target(object):
+        class Target(Document):
             f = fields.DateTimeField("my_datetime")
             errors = Errors()
 
@@ -60,7 +60,7 @@ class DateTimeFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
     def test_validates_if_not_required(self):
-        class Target(object):
+        class Target(Document):
             f = fields.DateTimeField("my_datetime")
             errors = Errors()
 
@@ -69,7 +69,7 @@ class DateTimeFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
     def test_validates_base_errors(self):
-        class Target(object):
+        class Target(Document):
             f = fields.DateTimeField("my_datetime", required=True)
             errors = Errors()
 
@@ -79,7 +79,7 @@ class DateTimeFieldTest(unittest.TestCase):
 
 class FloatFieldTest(unittest.TestCase):
     def test_validates_is_float(self):
-        class Target(object):
+        class Target(Document):
             f = fields.FloatField("my_float")
             errors = Errors()
 
@@ -90,7 +90,7 @@ class FloatFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
     def test_converts_an_int_to_float_when_validating(self):
-        class Target(object):
+        class Target(Document):
             f = fields.FloatField("my_float")
             errors = Errors()
 
@@ -100,7 +100,7 @@ class FloatFieldTest(unittest.TestCase):
         self.assertEqual(4.0, t.f)
 
     def test_allows_none_value_if_not_required(self):
-        class Target(object):
+        class Target(Document):
             f = fields.FloatField("my_float")
             errors = Errors()
 
@@ -113,7 +113,7 @@ class FloatFieldTest(unittest.TestCase):
         self.assertEqual(None, f.min_value)
 
     def test_validates_min_value(self):
-        class Target(object):
+        class Target(Document):
             f = fields.FloatField("my_float", min_value=5)
             errors = Errors()
 
@@ -126,7 +126,7 @@ class FloatFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
     def test_validates_min_value_of_zero(self):
-        class Target(object):
+        class Target(Document):
             f = fields.FloatField("my_float", min_value=0)
             errors = Errors()
 
@@ -143,7 +143,7 @@ class FloatFieldTest(unittest.TestCase):
         self.assertEqual(None, f.max_value)
 
     def test_validates_max_value(self):
-        class Target(object):
+        class Target(Document):
             f = fields.FloatField("my_float", max_value=10)
             errors = Errors()
 
@@ -156,7 +156,7 @@ class FloatFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
     def test_validates_max_value_if_zero(self):
-        class Target(object):
+        class Target(Document):
             f = fields.FloatField("my_float", max_value=0)
             errors = Errors()
 
@@ -169,7 +169,7 @@ class FloatFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
     def test_validates_base_errors(self):
-        class Target(object):
+        class Target(Document):
             f = fields.FloatField("my_float", required=True, min_value=10)
             errors = Errors()
 
@@ -179,7 +179,7 @@ class FloatFieldTest(unittest.TestCase):
 
 class IntegerFieldTest(unittest.TestCase):
     def test_validates_is_integer(self):
-        class Target(object):
+        class Target(Document):
             f = fields.IntegerField("my_integer")
             errors = Errors()
 
@@ -190,7 +190,7 @@ class IntegerFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
     def test_allows_none_if_not_required(self):
-        class Target(object):
+        class Target(Document):
             f = fields.IntegerField("my_integer")
             errors = Errors()
 
@@ -203,7 +203,7 @@ class IntegerFieldTest(unittest.TestCase):
         self.assertEqual(None, f.min_value)
 
     def test_validates_min_value(self):
-        class Target(object):
+        class Target(Document):
             f = fields.IntegerField("my_integer", min_value=5)
             errors = Errors()
 
@@ -216,7 +216,7 @@ class IntegerFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
     def test_validates_min_value_of_zero(self):
-        class Target(object):
+        class Target(Document):
             f = fields.IntegerField("my_integer", min_value=0)
             errors = Errors()
 
@@ -233,7 +233,7 @@ class IntegerFieldTest(unittest.TestCase):
         self.assertEqual(None, f.max_value)
 
     def test_validates_max_value(self):
-        class Target(object):
+        class Target(Document):
             f = fields.IntegerField("my_integer", max_value=10)
             errors = Errors()
 
@@ -246,7 +246,7 @@ class IntegerFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
     def test_validates_max_value_if_zero(self):
-        class Target(object):
+        class Target(Document):
             f = fields.IntegerField("my_integer", max_value=0)
             errors = Errors()
 
@@ -259,7 +259,7 @@ class IntegerFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
     def test_validates_base_errors(self):
-        class Target(object):
+        class Target(Document):
             f = fields.IntegerField("my_integer", required=True, min_value=10)
             errors = Errors()
 
@@ -269,7 +269,7 @@ class IntegerFieldTest(unittest.TestCase):
 
 class ObjectIdFieldTest(unittest.TestCase):
     def test_sets_and_gets_object_id(self):
-        class Target(object):
+        class Target(Document):
             f = fields.ObjectIdField("my_field")
             errors = Errors()
 
@@ -278,7 +278,7 @@ class ObjectIdFieldTest(unittest.TestCase):
         self.assertEqual(value, t.f)
 
     def test_casts_value_as_object_id_if_string(self):
-        class Target(object):
+        class Target(Document):
             f = fields.ObjectIdField("my_field")
             errors = Errors()
 
@@ -287,7 +287,7 @@ class ObjectIdFieldTest(unittest.TestCase):
         self.assertEqual(value, t.f)
 
     def test_does_not_cast_to_object_id_if_none(self):
-        class Target(object):
+        class Target(Document):
             f = fields.ObjectIdField("my_field")
             errors = Errors()
 
@@ -296,7 +296,7 @@ class ObjectIdFieldTest(unittest.TestCase):
         self.assertIsNone(t.f)
 
     def test_validates_is_object_id(self):
-        class Target(object):
+        class Target(Document):
             f = fields.ObjectIdField("my_field")
             errors = Errors()
 
@@ -306,7 +306,7 @@ class ObjectIdFieldTest(unittest.TestCase):
             t.errors.full_messages)
 
     def test_allows_none_if_not_required(self):
-        class Target(object):
+        class Target(Document):
             f = fields.ObjectIdField("my_field")
             errors = Errors()
 
@@ -315,7 +315,7 @@ class ObjectIdFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
     def test_validates_base_errors(self):
-        class Target(object):
+        class Target(Document):
             f = fields.ObjectIdField("my_field", required=True)
             errors = Errors()
 
@@ -330,7 +330,7 @@ class StringFieldTest(unittest.TestCase):
         self.field = fields.StringField("my_field")
 
     def test_strips_whitespace_from_value(self):
-        class Target(object):
+        class Target(Document):
             f = fields.StringField("my_field")
             errors = Errors()
 
@@ -339,7 +339,7 @@ class StringFieldTest(unittest.TestCase):
         self.assertEqual('a value with leading and trailing whitespace', t.f)
 
     def test_allows_none_value_if_not_required(self):
-        class Target(object):
+        class Target(Document):
             f = fields.StringField("my_field")
             errors = Errors()
 
@@ -351,7 +351,7 @@ class StringFieldTest(unittest.TestCase):
         self.assertEqual(None, self.field.min_length)
 
     def test_validates_min_length(self):
-        class Target(object):
+        class Target(Document):
             f = fields.StringField("my_field", min_length=10)
             errors = Errors()
 
@@ -364,7 +364,7 @@ class StringFieldTest(unittest.TestCase):
         self.assertEqual(None, self.field.max_length)
 
     def test_validates_max_length(self):
-        class Target(object):
+        class Target(Document):
             f = fields.StringField("my_field", max_length=10)
             errors = Errors()
 
@@ -377,7 +377,7 @@ class StringFieldTest(unittest.TestCase):
         self.assertEqual(None, self.field.regex)
 
     def test_validates_pattern(self):
-        class Target(object):
+        class Target(Document):
             f = fields.StringField("my_field", pattern="^This")
             errors = Errors()
 
@@ -393,7 +393,7 @@ class StringFieldTest(unittest.TestCase):
         self.assertEqual(None, self.field.length)
 
     def test_validates_exact_length(self):
-        class Target(object):
+        class Target(Document):
             f = fields.StringField("my_field", length=4)
             errors = Errors()
 
@@ -414,7 +414,7 @@ class StringFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
     def test_validates_base_errors(self):
-        class Target(object):
+        class Target(Document):
             f = fields.StringField("my_field", required=True, min_length=10)
             errors = Errors()
 
@@ -427,7 +427,7 @@ class StringFieldTest(unittest.TestCase):
         )
 
     def test_handles_empty_strings_for_required_validation(self):
-        class Target(object):
+        class Target(Document):
             f = fields.StringField("my_field", required=True, min_length=10)
             errors = Errors()
 
@@ -448,7 +448,7 @@ class StringFieldTest(unittest.TestCase):
         )
 
     def test_handles_empty_strings_if_not_required(self):
-        class Target(object):
+        class Target(Document):
             f = fields.StringField("my_field")
             errors = Errors()
 
@@ -461,7 +461,7 @@ class EmbeddedFieldTest(unittest.TestCase):
     def test_must_be_an_embedded_document(self):
         class Address(object):
             pass
-        class Target(object):
+        class Target(Document):
             errors = Errors()
 
         with self.assertRaises(TaviTypeError) as exc:
@@ -497,7 +497,7 @@ class EmbeddedFieldTest(unittest.TestCase):
             pass
         class Other(EmbeddedDocument):
             pass
-        class Target(object):
+        class Target(Document):
             f = fields.EmbeddedField("address", Address)
             errors = Errors()
 

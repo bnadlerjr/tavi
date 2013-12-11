@@ -171,7 +171,7 @@ class StringField(BaseField):
             instance.errors.add(self.name,
                 "is too long (maximum is %s characters)" % self.max_length)
 
-        if self.regex and self.regex.match(value) is None:
+        if self.regex and value and self.regex.match(value) is None:
             instance.errors.add(self.name, "is in the wrong format")
 
 class EmbeddedField(BaseField):
@@ -211,7 +211,6 @@ class EmbeddedField(BaseField):
                 setattr(self.value, field, embedded_value)
         else:
             self.value = value
-
 
 class ListField(BaseField):
     """Represents a list of embedded document fields."""
