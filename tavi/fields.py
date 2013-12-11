@@ -50,19 +50,20 @@ class FloatField(BaseField):
         """Validates the field."""
         super(FloatField, self).validate(instance, value)
 
-        if isinstance(value, int):
-            value = float(value)
+        if None != value:
+            if isinstance(value, int):
+                value = float(value)
 
-        if not isinstance(value, float):
-            instance.errors.add(self.name, "must be a float")
+            if not isinstance(value, float):
+                instance.errors.add(self.name, "must be a float")
 
-        if not None == self.min_value and value < self.min_value:
-            instance.errors.add(self.name,
-                "is too small (minimum is %s)" % self.min_value)
+            if not None == self.min_value and value < self.min_value:
+                instance.errors.add(self.name,
+                    "is too small (minimum is %s)" % self.min_value)
 
-        if not None == self.max_value and value > self.max_value:
-            instance.errors.add(self.name,
-                "is too big (maximum is %s)" % self.max_value)
+            if not None == self.max_value and value > self.max_value:
+                instance.errors.add(self.name,
+                    "is too big (maximum is %s)" % self.max_value)
 
 class IntegerField(BaseField):
     """Represents a integer number for a Mongo Document.

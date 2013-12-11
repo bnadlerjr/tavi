@@ -99,6 +99,15 @@ class FloatFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
         self.assertEqual(4.0, t.f)
 
+    def test_allows_none_value_if_not_required(self):
+        class Target(object):
+            f = fields.FloatField("my_float")
+            errors = Errors()
+
+        t = Target()
+        t.f = None
+        self.assertEqual(0, t.errors.count)
+
     def test_sets_default_min_value(self):
         f = fields.FloatField("my_float")
         self.assertEqual(None, f.min_value)
@@ -166,12 +175,7 @@ class FloatFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = None
-        self.assertEqual([
-            "My Float is required",
-            "My Float must be a float",
-            "My Float is too small (minimum is 10.0)"],
-            t.errors.full_messages
-        )
+        self.assertEqual(["My Float is required"], t.errors.full_messages)
 
 class IntegerFieldTest(unittest.TestCase):
     def test_validates_is_integer(self):
