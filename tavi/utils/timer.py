@@ -2,6 +2,7 @@
 from __future__ import with_statement
 import time
 
+
 class Timer(object):
     """An object use to time a block of code."""
     def __init__(self):

@@ -1,4 +1,6 @@
 """Various utility functions."""
+
+
 def flatten(target):
     """Flatten a list with nested lists into a single list.
 
