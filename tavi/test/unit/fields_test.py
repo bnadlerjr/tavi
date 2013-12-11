@@ -338,6 +338,15 @@ class StringFieldTest(unittest.TestCase):
         t.f = ' a value with leading and trailing whitespace    '
         self.assertEqual('a value with leading and trailing whitespace', t.f)
 
+    def test_allows_none_value_if_not_required(self):
+        class Target(object):
+            f = fields.StringField("my_field")
+            errors = Errors()
+
+        t = Target()
+        t.f = None
+        self.assertEqual(0, t.errors.count, t.errors.full_messages)
+
     def test_sets_default_min_length(self):
         self.assertEqual(None, self.field.min_length)
 
@@ -437,6 +446,16 @@ class StringFieldTest(unittest.TestCase):
             "My Field is too short (minimum is 10 characters)"],
             t.errors.full_messages
         )
+
+    def test_handles_empty_strings_if_not_required(self):
+        class Target(object):
+            f = fields.StringField("my_field")
+            errors = Errors()
+
+        t = Target()
+
+        t.f = ''
+        self.assertEqual(0, t.errors.count, t.errors.full_messages)
 
 class EmbeddedFieldTest(unittest.TestCase):
     def test_must_be_an_embedded_document(self):
