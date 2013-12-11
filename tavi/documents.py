@@ -11,6 +11,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class DocumentMetaClass(BaseDocumentMetaClass):
     """MetaClass for Documents. Sets up the database connection, infers the
     collection name by pluralizing and underscoring the class name, and sets
@@ -20,7 +21,8 @@ class DocumentMetaClass(BaseDocumentMetaClass):
 
     def __init__(cls, name, bases, attrs):
         super(DocumentMetaClass, cls).__init__(name, bases, attrs)
-        cls._collection_name = inflection.underscore(inflection.pluralize(name))
+        cls._collection_name = inflection.underscore(
+            inflection.pluralize(name))
 
     @property
     def collection(cls):
@@ -35,6 +37,7 @@ class DocumentMetaClass(BaseDocumentMetaClass):
     def collection_name(cls):
         """Returns the name of the Document collection."""
         return cls._collection_name
+
 
 class Document(BaseDocument):
     """Represents a Mongo Document. Provides methods for saving and retrieving
@@ -61,10 +64,14 @@ class Document(BaseDocument):
         """Removes the Document from the collection."""
         timer = Timer()
         with timer:
-            result = self.__class__.collection.remove({ "_id": self._id })
+            result = self.__class__.collection.remove({"_id": self._id})
 
-        logger.info("(%ss) %s DELETE %s", timer.duration_in_seconds(),
-                self.__class__.__name__, self._id)
+        logger.info(
+            "(%ss) %s DELETE %s",
+            timer.duration_in_seconds(),
+            self.__class__.__name__,
+            self._id
+        )
 
         if result.get("err"):
             logger.error(result.get("err"))
@@ -79,9 +86,14 @@ class Document(BaseDocument):
         with timer:
             results = cls.collection.find(*args, **kwargs)
 
-        logger.info("(%ss) %s FIND %s, %s (%s record(s) found)",
-            timer.duration_in_seconds(), cls.__name__, args, kwargs,
-            results.count())
+        logger.info(
+            "(%ss) %s FIND %s, %s (%s record(s) found)",
+            timer.duration_in_seconds(),
+            cls.__name__,
+            args,
+            kwargs,
+            results.count()
+        )
 
         return [cls(**result) for result in results]
 
@@ -113,9 +125,15 @@ class Document(BaseDocument):
         if result:
             found_record, num_found = cls(**result), 1
 
-        logger.info("(%ss) %s FIND ONE %s, %s, %s (%s record(s) found)",
+        logger.info(
+            "(%ss) %s FIND ONE %s, %s, %s (%s record(s) found)",
             timer.duration_in_seconds(),
-            cls.__name__, spec_or_id, args, kwargs, num_found)
+            cls.__name__,
+            spec_or_id,
+            args,
+            kwargs,
+            num_found
+        )
 
         return found_record
 
@@ -142,8 +160,10 @@ class Document(BaseDocument):
         if self.bson_id:
             operation = "UPDATE"
             with timer:
-                result = collection.update({ "_id": self._id },
-                    { "$set": self.field_values })
+                result = collection.update(
+                    {"_id": self._id},
+                    {"$set": self.field_values}
+                )
 
             if result.get("err"):
                 logger.error(result.get("err"))
@@ -154,9 +174,14 @@ class Document(BaseDocument):
             with timer:
                 self._id = collection.insert(self.field_values)
 
-        logger.info("(%ss) %s %s %s, %s",
-            timer.duration_in_seconds(), self.__class__.__name__, operation,
-            self.field_values, self._id)
+        logger.info(
+            "(%ss) %s %s %s, %s",
+            timer.duration_in_seconds(),
+            self.__class__.__name__,
+            operation,
+            self.field_values,
+            self._id
+        )
         return True
 
     def __update_timestamps(self, name, timestamp):
@@ -174,6 +199,7 @@ class Document(BaseDocument):
             elif isinstance(value, EmbeddedDocument):
                 if name in value.fields:
                     setattr(value, name, timestamp)
+
 
 class EmbeddedDocument(BaseDocument):
     """Represents a single EmbeddedDocument. Supports an *owner* attribute that
