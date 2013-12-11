@@ -4,10 +4,11 @@ from pymongo.database import Database
 import collections
 import tavi
 
+
 class Connection(object):
     """Represents a MongoDB connection."""
 
-    client   = None
+    client = None
     database = None
 
     @classmethod
@@ -21,6 +22,7 @@ class Connection(object):
         cls.client = client
         cls.database = Database(client, database_name)
 
+
 class EmbeddedList(collections.MutableSequence):
     """A custom list for embedded documents. Ensures that only
     EmbeddedDocuments can be added to the list. Supports all the of standard
@@ -29,7 +31,7 @@ class EmbeddedList(collections.MutableSequence):
     """
     def __init__(self, name):
         self.list_ = list()
-        self.name  = name
+        self.name = name
         self._owner = None
 
     def __len__(self):
