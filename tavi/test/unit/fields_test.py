@@ -571,9 +571,22 @@ class EmbeddedFieldTest(unittest.TestCase):
         t = Target()
         self.assertEqual("default", t.address.afield)
 
-    def xtest_type_checking_on_default_value(self):
-        pass
+    def test_type_checking_on_default_value(self):
+        class Address(EmbeddedDocument):
+            afield = fields.StringField("afield")
 
+        class Target(Document):
+            address = fields.EmbeddedField("address", Address, default="NotAnAddress")
+
+        with self.assertRaises(TaviTypeError) as exc:
+            t = Target()
+
+        expected_msg = (
+            "expected <type 'str'> to be a subclass of "
+            "tavi.document.EmbeddedDocument"
+        )
+
+        self.assertEqual(expected_msg, exc.exception.message)
 
 class ListFieldTest(unittest.TestCase):
     def test_sets_default_as_empty_list(self):

@@ -198,6 +198,13 @@ class EmbeddedField(BaseField):
 
     def __set__(self, instance, value):
         if value:
+            if not isinstance(value, EmbeddedDocument):
+                raise TaviTypeError(
+                        "expected %s to be a subclass of "
+                        "tavi.document.EmbeddedDocument" %
+                        value.__class__
+                        )
+
             if not self.value: self.value = self.doc_class()
             for field in value.fields:
                 embedded_value = getattr(value, field, None)
