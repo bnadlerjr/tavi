@@ -189,6 +189,15 @@ class IntegerFieldTest(unittest.TestCase):
         t.f = 2
         self.assertEqual(0, t.errors.count)
 
+    def test_allows_none_if_not_required(self):
+        class Target(object):
+            f = fields.IntegerField("my_integer")
+            errors = Errors()
+
+        t = Target()
+        t.f = None
+        self.assertEqual(0, t.errors.count)
+
     def test_sets_default_min_value(self):
         f = fields.IntegerField("my_integer")
         self.assertEqual(None, f.min_value)
@@ -256,12 +265,7 @@ class IntegerFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = None
-        self.assertEqual([
-            "My Integer is required",
-            "My Integer must be a integer",
-            "My Integer is too small (minimum is 10)"],
-            t.errors.full_messages
-        )
+        self.assertEqual(["My Integer is required"], t.errors.full_messages)
 
 class ObjectIdFieldTest(unittest.TestCase):
     def test_sets_and_gets_object_id(self):
