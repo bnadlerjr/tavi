@@ -273,7 +273,7 @@ In the above example, `OrderLine` is an `EmbeddedDocument` and `Order` is it's c
 >>> order.order_lines.append(line_b)
 ```
 
-When `order` is saved, it's `order_lines` are persisted as an array in the document. `order_lines` can be accessed through their owner, `order`.
+When `order` is saved, it's `order_lines` are persisted as an array in the document.
 
 ```python
 >>> order.order_lines[0].price

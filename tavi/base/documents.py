@@ -61,10 +61,6 @@ class BaseDocument(object):
         for field in self.fields:
             set_field_attr(self, field, kwargs.get(field))
 
-            field_value = getattr(self, field)
-            if hasattr(field_value, "owner"):
-                field_value.owner = self
-
     @property
     def field_values(self):
         """Returns a dictionary containing all fields and their values."""

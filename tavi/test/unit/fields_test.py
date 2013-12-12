@@ -553,17 +553,6 @@ class EmbeddedFieldTest(unittest.TestCase):
         t.f = Other()
         self.assertEqual(Address, t.f.__class__)
 
-    def test_has_a_owner(self):
-        class Address(EmbeddedDocument):
-            pass
-
-        class Target(Document):
-            f = fields.EmbeddedField("address", Address)
-            errors = Errors()
-
-        t = Target()
-        self.assertEqual(t, t.f.owner)
-
     def test_embedded_can_be_reloaded(self):
         class Address(EmbeddedDocument):
             field = fields.StringField("field")
