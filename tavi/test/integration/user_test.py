@@ -3,26 +3,28 @@ from integration import BaseMongoTest
 from tavi import fields
 from tavi.documents import Document
 
+
 class User(Document):
-    email      = fields.StringField("email",      required=True)
+    email = fields.StringField("email", required=True)
     first_name = fields.StringField("first_name", required=True)
-    last_name  = fields.StringField("last_name",  required=True)
+    last_name = fields.StringField("last_name", required=True)
 
     @classmethod
     def find_by_email(cls, email):
-        return cls.find_one({ "email": email })
+        return cls.find_one({"email": email})
 
     @classmethod
     def find_by_first_name(cls, first_name):
-        return cls.find({ "first_name": first_name })
+        return cls.find({"first_name": first_name})
+
 
 class UserTest(unittest.TestCase):
     def setUp(self):
         super(UserTest, self).setUp()
         self.user = User(
-            email      = "jdoe@example.com",
-            first_name = "John",
-            last_name  = "Doe"
+            email="jdoe@example.com",
+            first_name="John",
+            last_name="Doe"
         )
 
     def test_initialize(self):
@@ -34,57 +36,82 @@ class UserTest(unittest.TestCase):
         self.assertEqual("Doe", self.user.last_name)
 
     def test_list_fields(self):
-        self.assertEqual(['email', 'first_name', 'last_name'], self.user.fields)
+        self.assertEqual(
+            ['email', 'first_name', 'last_name'],
+            self.user.fields
+        )
+
 
 class UserValidationTest(unittest.TestCase):
     def setUp(self):
         super(UserValidationTest, self).setUp()
         self.user = User(
-            email      = "jdoe@example.com",
-            first_name = "John",
-            last_name  = "Doe"
+            email="jdoe@example.com",
+            first_name="John",
+            last_name="Doe"
         )
 
     def test_does_not_have_errors_when_all_validations_are_met(self):
-        self.assertTrue(self.user.valid,
-            "expected user to be valid (%s)" % self.user.errors.full_messages)
+        self.assertTrue(
+            self.user.valid,
+            "expected user to be valid (%s)" % self.user.errors.full_messages
+        )
         self.assertEqual([], self.user.errors.full_messages)
 
     def test_is_invalid_without_email(self):
-        self.assertTrue(self.user.valid,
-            "expected user to be valid (%s)" % self.user.errors.full_messages)
+        self.assertTrue(
+            self.user.valid,
+            "expected user to be valid (%s)" % self.user.errors.full_messages
+        )
         self.user.email = None
         self.assertFalse(self.user.valid, "expected user to be invalid")
         self.assertEqual(['Email is required'], self.user.errors.full_messages)
 
     def test_is_invalid_without_first_name(self):
-        self.assertTrue(self.user.valid,
-            "expected user to be valid (%s)" % self.user.errors.full_messages)
+        self.assertTrue(
+            self.user.valid,
+            "expected user to be valid (%s)" % self.user.errors.full_messages
+        )
         self.user.first_name = None
         self.assertFalse(self.user.valid, "expected user to be invalid")
-        self.assertEqual(['First Name is required'], self.user.errors.full_messages)
+        self.assertEqual(
+            ['First Name is required'],
+            self.user.errors.full_messages
+        )
 
     def test_is_invalid_without_last_name(self):
-        self.assertTrue(self.user.valid,
-            "expected user to be valid (%s)" % self.user.errors.full_messages)
+        self.assertTrue(
+            self.user.valid,
+            "expected user to be valid (%s)" % self.user.errors.full_messages
+        )
         self.user.last_name = None
         self.assertFalse(self.user.valid, "expected user to be invalid")
-        self.assertEqual(['Last Name is required'], self.user.errors.full_messages)
+        self.assertEqual(
+            ['Last Name is required'],
+            self.user.errors.full_messages
+        )
 
     def test_is_invalid_with_multiple_errors(self):
-        self.assertTrue(self.user.valid,
-            "expected user to be valid (%s)" % self.user.errors.full_messages)
+        self.assertTrue(
+            self.user.valid,
+            "expected user to be valid (%s)" % self.user.errors.full_messages
+        )
         self.user.first_name = None
         self.user.last_name = None
         self.assertFalse(self.user.valid, "expected user to be invalid")
-        self.assertEqual([
-            'First Name is required',
-            'Last Name is required'
-        ], self.user.errors.full_messages)
+        self.assertEqual(
+            [
+                'First Name is required',
+                'Last Name is required'
+            ],
+            self.user.errors.full_messages
+        )
 
     def test_errors_are_reset_when_valid_is_called(self):
-        self.assertTrue(self.user.valid,
-            "expected user to be valid (%s)" % self.user.errors.full_messages)
+        self.assertTrue(
+            self.user.valid,
+            "expected user to be valid (%s)" % self.user.errors.full_messages
+        )
         self.user.email = None
         self.user.first_name = None
         self.assertFalse(self.user.valid, "expected user to be invalid")
@@ -92,15 +119,19 @@ class UserValidationTest(unittest.TestCase):
         self.user.email = "jdoe@example.com"
 
         self.assertFalse(self.user.valid, "expected user to be invalid")
-        self.assertEqual(['First Name is required'], self.user.errors.full_messages)
+        self.assertEqual(
+            ['First Name is required'],
+            self.user.errors.full_messages
+        )
+
 
 class UserPersistenceTest(BaseMongoTest):
     def setUp(self):
         super(UserPersistenceTest, self).setUp()
         self.user = User(
-            email      = "jdoe@example.com",
-            first_name = "John",
-            last_name  = "Doe"
+            email="jdoe@example.com",
+            first_name="John",
+            last_name="Doe"
         )
 
     def test_inserts_a_new_user(self):
@@ -136,6 +167,7 @@ class UserPersistenceTest(BaseMongoTest):
 
         self.user.delete()
         self.assertEqual(0, self.db.users.count())
+
 
 class UserQueryTest(BaseMongoTest):
     def setUp(self):

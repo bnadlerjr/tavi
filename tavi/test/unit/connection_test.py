@@ -2,6 +2,7 @@ import unittest
 from pymongo import MongoClient
 from tavi import Connection
 
+
 class ConnectionTest(unittest.TestCase):
     def setUp(self):
         super(ConnectionTest, self).setUp()

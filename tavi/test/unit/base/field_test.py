@@ -2,6 +2,7 @@ import unittest
 from tavi.base.fields import BaseField
 from tavi.errors import Errors
 
+
 class BaseFieldTest(unittest.TestCase):
     def setUp(self):
         self.field = BaseField("my_field")
@@ -44,8 +45,10 @@ class BaseFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = "not a choice"
-        self.assertEqual(["My Field value must be in list"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Field value must be in list"],
+            t.errors.full_messages
+        )
 
         t.f = "type_a"
         self.assertEqual(0, t.errors.count)
@@ -55,7 +58,7 @@ class BaseFieldTest(unittest.TestCase):
             f = BaseField("my_field", persist=False)
             errors = Errors()
 
-        t = Target()
+        Target()
 
     def test_multiple_fields_do_not_share_attributes(self):
         another_field = BaseField("another_field")
@@ -77,4 +80,3 @@ class BaseFieldTest(unittest.TestCase):
 
         self.assertEqual(-1, t.afield)
         self.assertEqual(1, t.errors.count)
-

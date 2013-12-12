@@ -5,6 +5,7 @@ from tavi import fields
 from tavi.documents import Document, EmbeddedDocument
 from tavi.errors import TaviTypeError, Errors
 
+
 class BooleanFieldTest(unittest.TestCase):
     def test_validates_is_boolean(self):
         class Target(Document):
@@ -16,15 +17,19 @@ class BooleanFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
         t.f = None
-        self.assertEqual(["My Boolean is required"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Boolean is required"],
+            t.errors.full_messages
+        )
 
         t.f = False
         self.assertEqual(0, t.errors.count)
 
         t.f = 13
-        self.assertEqual(["My Boolean must be a valid boolean"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Boolean must be a valid boolean"],
+            t.errors.full_messages
+        )
 
     def test_non_required_boolean(self):
         class Target(Document):
@@ -42,8 +47,11 @@ class BooleanFieldTest(unittest.TestCase):
         self.assertEqual(0, t.errors.count)
 
         t.f = 13
-        self.assertEqual(["My Boolean must be a valid boolean"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Boolean must be a valid boolean"],
+            t.errors.full_messages
+        )
+
 
 class DateTimeFieldTest(unittest.TestCase):
     def test_validates_is_datetime(self):
@@ -53,8 +61,10 @@ class DateTimeFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = "not a datetime"
-        self.assertEqual(["My Datetime must be a valid date and time"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Datetime must be a valid date and time"],
+            t.errors.full_messages
+        )
 
         t.f = datetime.utcnow()
         self.assertEqual(0, t.errors.count)
@@ -76,6 +86,7 @@ class DateTimeFieldTest(unittest.TestCase):
         t = Target()
         t.f = None
         self.assertEqual(["My Datetime is required"], t.errors.full_messages)
+
 
 class FloatFieldTest(unittest.TestCase):
     def test_validates_is_float(self):
@@ -119,8 +130,10 @@ class FloatFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = 4.99
-        self.assertEqual(["My Float is too small (minimum is 5.0)"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Float is too small (minimum is 5.0)"],
+            t.errors.full_messages
+        )
 
         t.f = 5
         self.assertEqual(0, t.errors.count)
@@ -132,8 +145,10 @@ class FloatFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = -4.99
-        self.assertEqual(["My Float is too small (minimum is 0.0)"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Float is too small (minimum is 0.0)"],
+            t.errors.full_messages
+        )
 
         t.f = 5
         self.assertEqual(0, t.errors.count)
@@ -149,8 +164,10 @@ class FloatFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = 10.00001
-        self.assertEqual(["My Float is too big (maximum is 10.0)"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Float is too big (maximum is 10.0)"],
+            t.errors.full_messages
+        )
 
         t.f = 10
         self.assertEqual(0, t.errors.count)
@@ -162,8 +179,10 @@ class FloatFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = 10.00001
-        self.assertEqual(["My Float is too big (maximum is 0.0)"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Float is too big (maximum is 0.0)"],
+            t.errors.full_messages
+        )
 
         t.f = -10
         self.assertEqual(0, t.errors.count)
@@ -177,6 +196,7 @@ class FloatFieldTest(unittest.TestCase):
         t.f = None
         self.assertEqual(["My Float is required"], t.errors.full_messages)
 
+
 class IntegerFieldTest(unittest.TestCase):
     def test_validates_is_integer(self):
         class Target(Document):
@@ -185,7 +205,12 @@ class IntegerFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = 2.2
-        self.assertEqual(["My Integer must be a integer"], t.errors.full_messages)
+
+        self.assertEqual(
+            ["My Integer must be a integer"],
+            t.errors.full_messages
+        )
+
         t.f = 2
         self.assertEqual(0, t.errors.count)
 
@@ -209,8 +234,10 @@ class IntegerFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = 4
-        self.assertEqual(["My Integer is too small (minimum is 5)"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Integer is too small (minimum is 5)"],
+            t.errors.full_messages
+        )
 
         t.f = 5
         self.assertEqual(0, t.errors.count)
@@ -222,8 +249,10 @@ class IntegerFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = -4
-        self.assertEqual(["My Integer is too small (minimum is 0)"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Integer is too small (minimum is 0)"],
+            t.errors.full_messages
+        )
 
         t.f = 5
         self.assertEqual(0, t.errors.count)
@@ -239,8 +268,10 @@ class IntegerFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = 11
-        self.assertEqual(["My Integer is too big (maximum is 10)"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Integer is too big (maximum is 10)"],
+            t.errors.full_messages
+        )
 
         t.f = 10
         self.assertEqual(0, t.errors.count)
@@ -252,8 +283,10 @@ class IntegerFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = 10
-        self.assertEqual(["My Integer is too big (maximum is 0)"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Integer is too big (maximum is 0)"],
+            t.errors.full_messages
+        )
 
         t.f = -10
         self.assertEqual(0, t.errors.count)
@@ -266,6 +299,7 @@ class IntegerFieldTest(unittest.TestCase):
         t = Target()
         t.f = None
         self.assertEqual(["My Integer is required"], t.errors.full_messages)
+
 
 class ObjectIdFieldTest(unittest.TestCase):
     def test_sets_and_gets_object_id(self):
@@ -302,8 +336,10 @@ class ObjectIdFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = "not an object ID"
-        self.assertEqual(["My Field must be a valid Object Id"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Field must be a valid Object Id"],
+            t.errors.full_messages
+        )
 
     def test_allows_none_if_not_required(self):
         class Target(Document):
@@ -323,6 +359,7 @@ class ObjectIdFieldTest(unittest.TestCase):
         t.f = None
 
         self.assertEqual(["My Field is required"], t.errors.full_messages)
+
 
 class StringFieldTest(unittest.TestCase):
     def setUp(self):
@@ -357,8 +394,10 @@ class StringFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = "Not ten"
-        self.assertEqual(["My Field is too short (minimum is 10 characters)"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Field is too short (minimum is 10 characters)"],
+            t.errors.full_messages
+        )
 
     def test_sets_default_max_length(self):
         self.assertEqual(None, self.field.max_length)
@@ -370,8 +409,10 @@ class StringFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = "More than ten characters"
-        self.assertEqual(["My Field is too long (maximum is 10 characters)"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Field is too long (maximum is 10 characters)"],
+            t.errors.full_messages
+        )
 
     def test_sets_default_pattern(self):
         self.assertEqual(None, self.field.regex)
@@ -383,8 +424,10 @@ class StringFieldTest(unittest.TestCase):
 
         t = Target()
         t.f = "Does not match pattern"
-        self.assertEqual(["My Field is in the wrong format"],
-            t.errors.full_messages)
+        self.assertEqual(
+            ["My Field is in the wrong format"],
+            t.errors.full_messages
+        )
 
         t.f = "This is the right pattern"
         self.assertEqual(0, t.errors.count)
@@ -457,10 +500,12 @@ class StringFieldTest(unittest.TestCase):
         t.f = ''
         self.assertEqual(0, t.errors.count, t.errors.full_messages)
 
+
 class EmbeddedFieldTest(unittest.TestCase):
     def test_must_be_an_embedded_document(self):
         class Address(object):
             pass
+
         class Target(Document):
             errors = Errors()
 
@@ -477,14 +522,15 @@ class EmbeddedFieldTest(unittest.TestCase):
     def test_assign_and_retrieve_values(self):
         class Address(EmbeddedDocument):
             pass
+
         class Target(object):
             f = fields.EmbeddedField("address", Address)
             errors = Errors()
 
         t = Target()
-        t.f.street      = "123 Elm St."
-        t.f.city        = "Anywhere"
-        t.f.state       = "NJ"
+        t.f.street = "123 Elm St."
+        t.f.city = "Anywhere"
+        t.f.state = "NJ"
         t.f.postal_code = "00000"
 
         self.assertEqual("123 Elm St.", t.f.street)
@@ -495,8 +541,10 @@ class EmbeddedFieldTest(unittest.TestCase):
     def test_cannot_overwrite_class(self):
         class Address(EmbeddedDocument):
             pass
+
         class Other(EmbeddedDocument):
             pass
+
         class Target(Document):
             f = fields.EmbeddedField("address", Address)
             errors = Errors()
@@ -508,6 +556,7 @@ class EmbeddedFieldTest(unittest.TestCase):
     def test_has_a_owner(self):
         class Address(EmbeddedDocument):
             pass
+
         class Target(Document):
             f = fields.EmbeddedField("address", Address)
             errors = Errors()
@@ -544,6 +593,7 @@ class EmbeddedFieldTest(unittest.TestCase):
 
         class Target(Document):
             address = fields.EmbeddedField("address", Address)
+
         t = Target()
         t.address = None
         self.assertIsNone(t.address)
@@ -554,6 +604,7 @@ class EmbeddedFieldTest(unittest.TestCase):
 
         class Target(Document):
             address = fields.EmbeddedField("address", Address)
+
         t = Target()
         t.address = None
         t.address = Address()
@@ -566,7 +617,9 @@ class EmbeddedFieldTest(unittest.TestCase):
         defaultAddress = Address(afield="default")
 
         class Target(Document):
-            address = fields.EmbeddedField("address", Address, default=defaultAddress)
+            address = fields.EmbeddedField(
+                "address", Address, default=defaultAddress
+            )
 
         t = Target()
         self.assertEqual("default", t.address.afield)
@@ -576,10 +629,12 @@ class EmbeddedFieldTest(unittest.TestCase):
             afield = fields.StringField("afield")
 
         class Target(Document):
-            address = fields.EmbeddedField("address", Address, default="NotAnAddress")
+            address = fields.EmbeddedField(
+                "address", Address, default="NotAnAddress"
+            )
 
         with self.assertRaises(TaviTypeError) as exc:
-            t = Target()
+            Target()
 
         expected_msg = (
             "expected <type 'str'> to be a subclass of "
@@ -588,10 +643,12 @@ class EmbeddedFieldTest(unittest.TestCase):
 
         self.assertEqual(expected_msg, exc.exception.message)
 
+
 class ListFieldTest(unittest.TestCase):
     def test_sets_default_as_empty_list(self):
         class OrderLine(EmbeddedDocument):
             pass
+
         class Order(object):
             f = fields.ListField("orderlines")
             errors = Errors()
@@ -602,8 +659,10 @@ class ListFieldTest(unittest.TestCase):
     def test_cannot_overwrite_value(self):
         class Other(object):
             pass
+
         class OrderLine(EmbeddedDocument):
             pass
+
         class Order(object):
             f = fields.ListField("orderlines")
             errors = Errors()

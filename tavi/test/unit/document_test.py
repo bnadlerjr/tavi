@@ -1,12 +1,10 @@
 import unittest
-import datetime
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.database import Database
-from tavi import Connection
-from tavi.errors import TaviConnectionError
 from tavi.documents import EmbeddedDocument, Document
 from tavi import fields
+
 
 class DocumentTest(unittest.TestCase):
     class Sample(Document):
@@ -24,19 +22,23 @@ class DocumentTest(unittest.TestCase):
             Collection(
                 Database(MongoClient('localhost', 27017), 'test_database'),
                 'samples'
-            ), self.Sample.collection)
+            ),
+            self.Sample.collection
+        )
+
 
 class Address(EmbeddedDocument):
-    street           = fields.StringField("street")
-    created_at       = fields.DateTimeField("created_at")
+    street = fields.StringField("street")
+    created_at = fields.DateTimeField("created_at")
     last_modified_at = fields.DateTimeField("last_modified_at")
+
 
 class DocumentSaveTest(unittest.TestCase):
     class Sample(Document):
-        name             = fields.StringField("name", required=True)
-        created_at       = fields.DateTimeField("created_at")
+        name = fields.StringField("name", required=True)
+        created_at = fields.DateTimeField("created_at")
         last_modified_at = fields.DateTimeField("last_modified_at")
-        address          = fields.EmbeddedField("address", Address)
+        address = fields.EmbeddedField("address", Address)
 
     def setUp(self):
         super(DocumentSaveTest, self).setUp()
@@ -105,7 +107,6 @@ class DocumentSaveTest(unittest.TestCase):
         self.assertNotEqual(last_modified, self.sample.last_modified_at)
 
     def test_save_sets_last_modified_for_any_embedded_documents(self):
-        address = Address(street="123 Elm St.")
         self.sample.name = "John"
         self.assertTrue(self.sample.save(), self.sample.errors.full_messages)
         last_modified = self.sample.address.last_modified_at
@@ -113,7 +114,12 @@ class DocumentSaveTest(unittest.TestCase):
 
         self.sample.name = "Joe"
         self.assertTrue(self.sample.save(), self.sample.errors.full_messages)
-        self.assertNotEqual(last_modified, self.sample.address.last_modified_at)
+
+        self.assertNotEqual(
+            last_modified,
+            self.sample.address.last_modified_at
+        )
+
 
 class DocumentDeleteTest(unittest.TestCase):
     class Sample(Document):
@@ -132,21 +138,24 @@ class DocumentDeleteTest(unittest.TestCase):
         sample.delete()
         self.assertEqual(0, self.db.samples.count())
 
+
 class DocumentFindTest(unittest.TestCase):
     class Sample(Document):
         first_name = fields.StringField("first_name", required=True)
-        last_name  = fields.StringField("last_name",  required=True)
+        last_name = fields.StringField("last_name",  required=True)
 
     def setUp(self):
         super(DocumentFindTest, self).setUp()
         client = MongoClient()
         client.drop_database("test_database")
         self.db = client['test_database']
-        self.ids = self.db.samples.insert([
-            { "first_name": "John", "last_name": "Doe" },
-            { "first_name": "Joe",  "last_name": "Smith" },
-            { "first_name": "John", "last_name": "Smith" }
-        ])
+        self.ids = self.db.samples.insert(
+            [
+                {"first_name": "John", "last_name": "Doe"},
+                {"first_name": "Joe",  "last_name": "Smith"},
+                {"first_name": "John", "last_name": "Smith"}
+            ]
+        )
 
         self.assertEqual(3, self.db.samples.count())
 
@@ -169,7 +178,7 @@ class DocumentFindTest(unittest.TestCase):
         self.assertEqual(self.ids[1], result.bson_id)
 
     def test_find(self):
-        result = self.Sample.find({ "last_name": "Smith" })
+        result = self.Sample.find({"last_name": "Smith"})
         self.assertEqual(2, len(result))
         self.assertEqual("Smith", result[0].last_name)
         self.assertEqual("Smith", result[1].last_name)
@@ -188,20 +197,21 @@ class DocumentFindTest(unittest.TestCase):
     def test_count(self):
         self.assertEqual(3, self.Sample.count())
 
+
 class EmbeddedDocumentTest(unittest.TestCase):
     class Sample(EmbeddedDocument):
         first_name = fields.StringField("first_name")
-        last_name  = fields.StringField("last_name")
+        last_name = fields.StringField("last_name")
 
     def test_equal_if_all_attributes_equal(self):
         sample_a = self.Sample(
-            first_name = "John",
-            last_name  = "Doe"
+            first_name="John",
+            last_name="Doe"
         )
 
         sample_b = self.Sample(
-            first_name = "John",
-            last_name  = "Doe"
+            first_name="John",
+            last_name="Doe"
         )
 
         self.assertTrue(sample_a == sample_b)
@@ -209,13 +219,13 @@ class EmbeddedDocumentTest(unittest.TestCase):
 
     def test_unequal_if_attributes_are_not_equal(self):
         sample_a = self.Sample(
-            first_name = "John",
-            last_name  = "Doe"
+            first_name="John",
+            last_name="Doe"
         )
 
         sample_b = self.Sample(
-            first_name = "James",
-            last_name  = "Doe"
+            first_name="James",
+            last_name="Doe"
         )
 
         self.assertFalse(sample_a == sample_b)
@@ -226,19 +236,17 @@ class EmbeddedDocumentTest(unittest.TestCase):
             pass
 
         sample_a = self.Sample(
-            first_name = "John",
-            last_name  = "Doe"
+            first_name="John",
+            last_name="Doe"
         )
 
         sample_b = AnotherSample(
-            first_name = "John",
-            last_name  = "Doe"
+            first_name="John",
+            last_name="Doe"
         )
 
         self.assertFalse(sample_a == sample_b)
         self.assertFalse(sample_b == sample_a)
 
     def test_unequal_if_one_is_none(self):
-        s = self.Sample()
-
-        self.assertFalse(s == None)
+        self.assertFalse(self.Sample is None)

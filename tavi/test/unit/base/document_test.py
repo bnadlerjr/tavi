@@ -3,6 +3,7 @@ from tavi.base.documents import BaseDocument
 from tavi.documents import EmbeddedDocument
 from tavi.fields import EmbeddedField, ListField, StringField, DateTimeField
 
+
 class BaseDocumentNoFieldsTest(unittest.TestCase):
     class NoFieldsSample(BaseDocument):
         pass
@@ -23,11 +24,11 @@ class BaseDocumentNoFieldsTest(unittest.TestCase):
     def test_get_field_values(self):
         self.assertEqual({}, self.no_fields_sample.field_values)
 
-# --------------------------------------------------------------------------- #
 
 class Address(EmbeddedDocument):
     street = StringField("street")
     city = StringField("city")
+
 
 class BaseDocumentFieldsTest(unittest.TestCase):
     class Sample(BaseDocument):
@@ -43,16 +44,25 @@ class BaseDocumentFieldsTest(unittest.TestCase):
     class SampleWithEmbeddedListField(BaseDocument):
         addresses = ListField("addresses")
 
+    class SampleWithDefaultedField(BaseDocument):
+        name = StringField("name", default="Cthulhu")
+
     def setUp(self):
         super(BaseDocumentFieldsTest, self).setUp()
         self.sample = self.Sample()
 
     def test_get_fields(self):
-        self.assertEqual(["name", "payment_type", "created_at"], self.sample.fields)
+        self.assertEqual(
+            ["name", "payment_type", "created_at"],
+            self.sample.fields
+        )
 
     def test_get_errors(self):
         self.sample.name = None
-        self.assertEqual(["Name is required"], self.sample.errors.full_messages)
+        self.assertEqual(
+            ["Name is required"],
+            self.sample.errors.full_messages
+        )
 
     def test_valid_when_no_errors(self):
         self.sample.name = "test"
@@ -73,7 +83,7 @@ class BaseDocumentFieldsTest(unittest.TestCase):
     def test_init_with_kwargs_does_not_overwrite_attributes(self):
         class User(BaseDocument):
             first_name = StringField("first_name")
-            last_name  = StringField("last_name")
+            last_name = StringField("last_name")
 
         user_a = User(first_name="John", last_name="Doe")
         user_b = User(first_name="Walter", last_name="White")
@@ -87,15 +97,15 @@ class BaseDocumentFieldsTest(unittest.TestCase):
     def test_init_multiple_does_not_overwrite_attributes(self):
         class User(BaseDocument):
             first_name = StringField("first_name")
-            last_name  = StringField("last_name")
+            last_name = StringField("last_name")
 
         user_a = User()
         user_a.first_name = "John"
-        user_a.last_name  = "Doe"
+        user_a.last_name = "Doe"
 
         user_b = User()
         user_b.first_name = "Walter"
-        user_b.last_name  = "White"
+        user_b.last_name = "White"
 
         self.assertEqual("John", user_a.first_name)
         self.assertEqual("Doe", user_a.last_name)
@@ -111,7 +121,7 @@ class BaseDocumentFieldsTest(unittest.TestCase):
             "created_at": None
         }, sample.field_values)
 
-    def test_get_field_values(self):
+    def test_get_field_values_with_embedded_field(self):
         sample = self.SampleWithEmbeddedField(name="John")
         sample.address.street = "123 Elm St."
         sample.address.city = "Anywhere"
@@ -121,9 +131,9 @@ class BaseDocumentFieldsTest(unittest.TestCase):
             "address": {
                 "street": "123 Elm St.",
                 "city": "Anywhere"
-            } }, sample.field_values)
+            }}, sample.field_values)
 
-    def test_get_field_values(self):
+    def test_get_field_values_with_embedded_list_field(self):
         sample = self.SampleWithEmbeddedListField()
         address = Address(street="123 Elm Street", city="Anywhere")
 
@@ -135,12 +145,6 @@ class BaseDocumentFieldsTest(unittest.TestCase):
                 "city": "Anywhere"
             }]}, sample.field_values)
 
-    class SampleWithDefaultedField(BaseDocument):
-        name = StringField("name", default="Cthulhu")
-
     def test_field_default_values(self):
         sample = self.SampleWithDefaultedField()
-
         self.assertEqual("Cthulhu", sample.name)
-
-

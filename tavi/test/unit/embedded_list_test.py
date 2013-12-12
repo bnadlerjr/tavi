@@ -4,6 +4,7 @@ from tavi.documents import Document, EmbeddedDocument
 from tavi import EmbeddedList
 from tavi.errors import TaviTypeError
 
+
 class EmbeddedListTest(unittest.TestCase):
     class Address(EmbeddedDocument):
         street = fields.StringField("street", required=True)
@@ -41,8 +42,10 @@ class EmbeddedListTest(unittest.TestCase):
 
     def test_add_multiple_items(self):
         self.my_list.extend([self.address1, self.address2, self.address3])
-        self.assertEqual([self.address1, self.address2, self.address3],
-            self.my_list)
+        self.assertEqual(
+            [self.address1, self.address2, self.address3],
+            self.my_list
+        )
 
     def test_sets_owner_of_added_item(self):
         self.my_list.owner = self.owner
@@ -69,8 +72,10 @@ class EmbeddedListTest(unittest.TestCase):
     def test_merges_errors_with_owner(self):
         self.my_list.owner = self.owner
         self.my_list.append(self.Address())
-        self.assertEqual(["Addresses Error: Street is required"],
-            self.owner.errors.full_messages)
+        self.assertEqual(
+            ["Addresses Error: Street is required"],
+            self.owner.errors.full_messages
+        )
 
     def test_find_item(self):
         self.my_list.append(self.address1)
