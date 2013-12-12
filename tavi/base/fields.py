@@ -1,5 +1,6 @@
 """Provides base field support."""
 
+
 class BaseField(object):
     """Base class for Mongo Document fields.
 
@@ -17,8 +18,10 @@ class BaseField(object):
 
     _creation_counter = 0
 
-    def __init__(self, name, required=False, default=None, choices=None,
-            persist=True):
+    def __init__(
+        self, name,
+        required=False, default=None, choices=None, persist=True
+    ):
         self.name = name
         self.attribute_name = "_%s" % name
         self.required = required

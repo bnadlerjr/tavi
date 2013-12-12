@@ -5,6 +5,7 @@ from tavi.errors import Errors
 from tavi.base.fields import BaseField
 import tavi
 
+
 def get_field_attr(cls, field):
     """Custom function for retrieving a tavi.field attribute. Handles nested
     attributes for embedded documents as well as embedded lists of documents.
@@ -18,13 +19,21 @@ def get_field_attr(cls, field):
     else:
         return value
 
+
 def set_field_attr(cls, field, value):
     """Custom function for setting a tavi.field attribute."""
     field_descriptor = cls._field_descriptors[field]
-    if not value: value = field_descriptor.default
-    if isinstance(field_descriptor , tavi.fields.EmbeddedField) and not value: value = {}
-    if isinstance(value, dict): value = field_descriptor.doc_class(**value)
+    if not value:
+        value = field_descriptor.default
+
+    if isinstance(field_descriptor, tavi.fields.EmbeddedField) and not value:
+        value = {}
+
+    if isinstance(value, dict):
+        value = field_descriptor.doc_class(**value)
+
     setattr(cls, field, value)
+
 
 class BaseDocumentMetaClass(type):
     """MetaClass for BaseDocuments. Handles initializing the list of fields for
@@ -35,12 +44,13 @@ class BaseDocumentMetaClass(type):
         super(BaseDocumentMetaClass, cls).__init__(name, bases, attrs)
 
         sorted_fields = sorted(
-            [field for field in attrs.iteritems() if isinstance(field[1],
-                BaseField) and field[1].persist],
-            key = lambda i: i[1].creation_order
+            [field for field in attrs.iteritems()
+                if isinstance(field[1], BaseField) and field[1].persist],
+            key=lambda i: i[1].creation_order
         )
 
         cls._field_descriptors = collections.OrderedDict(sorted_fields)
+
 
 class BaseDocument(object):
     """Base class for Mongo Documents. Provides basic field support."""
@@ -49,7 +59,6 @@ class BaseDocument(object):
     def __init__(self, **kwargs):
         self._errors = Errors()
         for field in self.fields:
-            field_descriptor = self._field_descriptors[field]
             set_field_attr(self, field, kwargs.get(field))
 
             field_value = getattr(self, field)
@@ -59,7 +68,7 @@ class BaseDocument(object):
     @property
     def field_values(self):
         """Returns a dictionary containing all fields and their values."""
-        return { field: get_field_attr(self, field) for field in self.fields }
+        return {field: get_field_attr(self, field) for field in self.fields}
 
     @property
     def errors(self):
@@ -85,7 +94,9 @@ class BaseDocument(object):
 
         """
         if fields:
-            return dumps({ field: self.field_values[field] for field in fields })
+            return dumps({
+                field: self.field_values[field] for field in fields
+            })
         else:
             return dumps(self.field_values)
 
