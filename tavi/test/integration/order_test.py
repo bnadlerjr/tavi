@@ -59,6 +59,7 @@ class OrderTest(BaseMongoTest):
             pay_type="Mastercard"
         )
 
+        order.address = Address()
         order.address.street = "123 Elm St."
         order.address.city = "Anywhere"
         order.address.state = "NJ"
@@ -81,6 +82,7 @@ class OrderTest(BaseMongoTest):
             pay_type="Mastercard"
         )
 
+        order.address = Address()
         order.address.street = "123 Elm St."
         order.address.city = "Anywhere"
         order.address.state = "NJ"

@@ -3,7 +3,6 @@ import collections
 from bson.json_util import dumps, loads
 from tavi.errors import Errors
 from tavi.base.fields import BaseField
-import tavi
 
 
 def get_field_attr(cls, field):
@@ -25,9 +24,6 @@ def set_field_attr(cls, field, value):
     field_descriptor = cls._field_descriptors[field]
     if not value:
         value = field_descriptor.default
-
-    if isinstance(field_descriptor, tavi.fields.EmbeddedField) and not value:
-        value = {}
 
     if isinstance(value, dict):
         value = field_descriptor.doc_class(**value)

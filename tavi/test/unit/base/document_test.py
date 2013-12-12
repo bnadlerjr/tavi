@@ -123,6 +123,7 @@ class BaseDocumentFieldsTest(unittest.TestCase):
 
     def test_get_field_values_with_embedded_field(self):
         sample = self.SampleWithEmbeddedField(name="John")
+        sample.address = Address()
         sample.address.street = "123 Elm St."
         sample.address.city = "Anywhere"
 

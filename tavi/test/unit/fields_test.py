@@ -587,6 +587,16 @@ class EmbeddedFieldTest(unittest.TestCase):
         t.address = None
         self.assertIsNone(t.address)
 
+    def test_sets_value_to_none_on_initialize_if_no_default(self):
+        class Address(EmbeddedDocument):
+            field = fields.StringField("field")
+
+        class Target(Document):
+            address = fields.EmbeddedField("address", Address)
+
+        t = Target()
+        self.assertIsNone(t.address)
+
     def test_can_be_assigned_after_being_assigned_to_none(self):
         class Address(EmbeddedDocument):
             field = fields.StringField("field")
