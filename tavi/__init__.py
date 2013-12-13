@@ -29,10 +29,17 @@ class EmbeddedList(collections.MutableSequence):
     list functions, excluding sorting.
 
     """
-    def __init__(self, name):
+    def __init__(self, name, type_):
         self.list_ = list()
         self.name = name
         self._owner = None
+        self._type = type_
+
+        if not isinstance(self._type(), tavi.documents.EmbeddedDocument):
+            raise tavi.errors.TaviTypeError(
+                "tavi.EmbeddedList only accepts "
+                "tavi.document.EmbeddedDocument objects"
+            )
 
     def __len__(self):
         return len(self.list_)
@@ -85,10 +92,12 @@ class EmbeddedList(collections.MutableSequence):
         valid it adds the errors to the list owner.
 
         """
-        if not isinstance(value, tavi.documents.EmbeddedDocument):
+        if not isinstance(value, self._type):
             raise tavi.errors.TaviTypeError(
-                "tavi.EmbeddedList only accepts "
-                "tavi.document.EmbeddedDocument objects"
+                "This tavi.EmbeddedList only accepts items of type %s (tried "
+                "to add an object of type %s)" % (
+                    self._type, value.__class__.__name__
+                )
             )
 
         if value.valid:

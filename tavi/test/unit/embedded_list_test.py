@@ -14,7 +14,7 @@ class EmbeddedListTest(unittest.TestCase):
 
     def setUp(self):
         super(EmbeddedListTest, self).setUp()
-        self.my_list = EmbeddedList("addresses")
+        self.my_list = EmbeddedList("addresses", self.Address)
         self.owner = self.Owner()
         self.address1 = self.Address(street="123 Elm Street")
         self.address2 = self.Address(street="456 Pine Street")
@@ -53,13 +53,31 @@ class EmbeddedListTest(unittest.TestCase):
         self.my_list.append(self.address1)
         self.assertEqual(self.address1.owner, self.my_list.owner)
 
-    def test_can_only_add_embedded_documents(self):
+    def test_can_only_have_embedded_documents(self):
+        class NotAnEmbeddedDoc(object):
+            pass
+
         with self.assertRaises(TaviTypeError) as exc:
-            self.my_list.append(1)
+            EmbeddedList("addresses", NotAnEmbeddedDoc)
 
         msg = (
             "tavi.EmbeddedList only accepts "
             "tavi.document.EmbeddedDocument objects"
+        )
+
+        self.assertEqual(msg, exc.exception.message)
+
+    def test_cannot_add_objects_of_invalid_type(self):
+        class AnotherEmbeddedDoc(EmbeddedDocument):
+            pass
+
+        with self.assertRaises(TaviTypeError) as exc:
+            self.my_list.append(AnotherEmbeddedDoc())
+
+        msg = (
+            "This tavi.EmbeddedList only accepts items of type <class "
+            "'unit.embedded_list_test.Address'> (tried to add an object of "
+            "type AnotherEmbeddedDoc)"
         )
 
         self.assertEqual(msg, exc.exception.message)

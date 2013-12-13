@@ -242,9 +242,17 @@ class EmbeddedField(BaseField):
 
 class ListField(BaseField):
     """Represents a list of embedded document fields."""
+    def __init__(self, name, type_, **kwargs):
+        super(ListField, self).__init__(name, **kwargs)
+        self._type = type_
+
     def __get__(self, instance, owner):
         if self.attribute_name not in instance.__dict__:
-            setattr(instance, self.attribute_name, EmbeddedList(self.name))
+            setattr(
+                instance,
+                self.attribute_name,
+                EmbeddedList(self.name, self._type)
+            )
         return getattr(instance, self.attribute_name)
 
     def __set__(self, instance, value):

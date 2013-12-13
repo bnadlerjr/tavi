@@ -22,7 +22,7 @@ class Order(Document):
     address = fields.EmbeddedField("address", Address)
     email = fields.StringField("email")
     pay_type = fields.StringField("pay_type")
-    order_lines = fields.ListField("order_lines")
+    order_lines = fields.ListField("order_lines", OrderLine)
 
 
 class OrderTest(BaseMongoTest):

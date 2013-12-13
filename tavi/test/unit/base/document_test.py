@@ -42,7 +42,7 @@ class BaseDocumentFieldsTest(unittest.TestCase):
         address = EmbeddedField("address", Address)
 
     class SampleWithEmbeddedListField(BaseDocument):
-        addresses = ListField("addresses")
+        addresses = ListField("addresses", Address)
 
     class SampleWithDefaultedField(BaseDocument):
         name = StringField("name", default="Cthulhu")

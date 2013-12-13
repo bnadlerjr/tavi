@@ -649,7 +649,7 @@ class ListFieldTest(unittest.TestCase):
             pass
 
         class Order(object):
-            f = fields.ListField("orderlines")
+            f = fields.ListField("orderlines", OrderLine)
             errors = Errors()
 
         order = Order()
@@ -663,7 +663,7 @@ class ListFieldTest(unittest.TestCase):
             pass
 
         class Order(object):
-            f = fields.ListField("orderlines")
+            f = fields.ListField("orderlines", OrderLine)
             errors = Errors()
 
         order = Order()
