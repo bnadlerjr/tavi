@@ -30,6 +30,6 @@ setup(
     zip_safe=False,
     install_requires=[
         "inflection >= 0.2.0",
-        "pymongo >= 2.5.2"
+        "pymongo >= 2.4.1"
     ]
 )
