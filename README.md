@@ -1,5 +1,7 @@
 # Tavi
 
+[![Build Status](https://travis-ci.org/bnadlerjr/tavi.png)](https://travis-ci.org/bnadlerjr/tavi)
+
 Note: This is Alpha software. Refer to GitHub issues for a list of features that still need to be implemented.
 
 Tavi (as in [Rikki Tikki Tavi](http://en.wikipedia.org/wiki/Rikki-Tikki-Tavi)) is an extremely thin Mongo object mapper for Python. It is a thin abstraction over [pymongo](http://api.mongodb.org/python/current/) that allows you to easily model your applications and persist your data in MongoDB.
