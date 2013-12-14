@@ -464,6 +464,23 @@ You will get back a handle to the `users` collection. This collection is a [pymo
 
 ### Contributing
 
+#### Environment Setup
+
+Clone the repo, cd into folder then:
+
+    virtualenv --no-site-packages env
+    . env/bin/activate
+    pip install -r requirements.txt
+
+Run the tests using:
+
+    python setup.py nosetests
+
+Flake8 is used for tracking PEP8 compliance, cyclomatic complexity, etc. Run it using:
+
+    flake8 tavi
+
+
 #### Issues / Roadmap
 
 Use GitHub [issues](https://github.com/bnadlerjr/tavi/issues) for reporting bugs and feature requests. This library is meant to be lightweight so I probably won't be adding many features but feel free to submit pull requests for any critical features you think may be missing.
