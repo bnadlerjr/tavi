@@ -212,7 +212,7 @@ class EmbeddedField(BaseField):
             raise TaviTypeError(
                 "expected %s to be a subclass of "
                 "tavi.document.EmbeddedDocument" %
-                doc_instance.__class__
+                doc_instance.__class__.__name__
             )
 
         self.doc_class = doc

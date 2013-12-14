@@ -96,7 +96,7 @@ class EmbeddedList(collections.MutableSequence):
             raise tavi.errors.TaviTypeError(
                 "This tavi.EmbeddedList only accepts items of type %s (tried "
                 "to add an object of type %s)" % (
-                    self._type, value.__class__.__name__
+                    self._type().__class__.__name__, value.__class__.__name__
                 )
             )
 
