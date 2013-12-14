@@ -8,6 +8,7 @@ class User(Document):
     email = fields.StringField("email", required=True)
     first_name = fields.StringField("first_name", required=True)
     last_name = fields.StringField("last_name", required=True)
+    status = fields.StringField("status", default="active")
 
     @classmethod
     def find_by_email(cls, email):
@@ -35,9 +36,12 @@ class UserTest(unittest.TestCase):
         self.assertEqual("John", self.user.first_name)
         self.assertEqual("Doe", self.user.last_name)
 
+    def test_initialize_with_default_value(self):
+        self.assertEqual("active", self.user.status)
+
     def test_list_fields(self):
         self.assertEqual(
-            ['email', 'first_name', 'last_name'],
+            ['email', 'first_name', 'last_name', 'status'],
             self.user.fields
         )
 

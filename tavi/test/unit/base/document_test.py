@@ -25,30 +25,19 @@ class BaseDocumentNoFieldsTest(unittest.TestCase):
         self.assertEqual({}, self.no_fields_sample.field_values)
 
 
-class Address(EmbeddedDocument):
-    street = StringField("street")
-    city = StringField("city")
-
-
-class BaseDocumentFieldsTest(unittest.TestCase):
+class BaseDocumentPropertiesTest(unittest.TestCase):
     class Sample(BaseDocument):
         name = StringField("name", required=True)
         password = StringField("password", persist=False)
         payment_type = StringField("payment_type")
         created_at = DateTimeField("created_at")
 
-    class SampleWithEmbeddedField(BaseDocument):
-        name = StringField("name", required=True)
-        address = EmbeddedField("address", Address)
-
-    class SampleWithEmbeddedListField(BaseDocument):
-        addresses = ListField("addresses", Address)
-
-    class SampleWithDefaultedField(BaseDocument):
-        name = StringField("name", default="Cthulhu")
+    class Address(EmbeddedDocument):
+        street = StringField("street")
+        city = StringField("city")
 
     def setUp(self):
-        super(BaseDocumentFieldsTest, self).setUp()
+        super(BaseDocumentPropertiesTest, self).setUp()
         self.sample = self.Sample()
 
     def test_get_fields(self):
@@ -56,6 +45,14 @@ class BaseDocumentFieldsTest(unittest.TestCase):
             ["name", "payment_type", "created_at"],
             self.sample.fields
         )
+
+    def test_get_field_values(self):
+        sample = self.Sample(name="John")
+        self.assertEqual({
+            "name": "John",
+            "payment_type": None,
+            "created_at": None
+        }, sample.field_values)
 
     def test_get_errors(self):
         self.sample.name = None
@@ -71,6 +68,50 @@ class BaseDocumentFieldsTest(unittest.TestCase):
     def test_invalid_when_errors(self):
         self.sample.name = None
         self.assertFalse(self.sample.valid, "expected sample to be invalid")
+
+    def test_get_field_values_with_embedded_field(self):
+        class SampleWithEmbeddedField(BaseDocument):
+            name = StringField("name", required=True)
+            address = EmbeddedField("address", self.Address)
+
+        sample = SampleWithEmbeddedField(name="John")
+        sample.address = self.Address()
+        sample.address.street = "123 Elm St."
+        sample.address.city = "Anywhere"
+
+        self.assertEqual({
+            "name": "John",
+            "address": {
+                "street": "123 Elm St.",
+                "city": "Anywhere"
+            }}, sample.field_values)
+
+    def test_get_field_values_with_embedded_list_field(self):
+        class SampleWithEmbeddedListField(BaseDocument):
+            addresses = ListField("addresses", self.Address)
+
+        sample = SampleWithEmbeddedListField()
+        address = self.Address(street="123 Elm Street", city="Anywhere")
+
+        sample.addresses.append(address)
+
+        self.assertEqual({
+            "addresses": [{
+                "street": "123 Elm Street",
+                "city": "Anywhere"
+            }]}, sample.field_values)
+
+
+class BaseDocumentInitializationTest(unittest.TestCase):
+    class Sample(BaseDocument):
+        name = StringField("name", required=True)
+        password = StringField("password", persist=False)
+        payment_type = StringField("payment_type")
+        created_at = DateTimeField("created_at")
+
+    def setUp(self):
+        super(BaseDocumentInitializationTest, self).setUp()
+        self.sample = self.Sample()
 
     def test_init_with_kwargs(self):
         sample = self.Sample(name="John")
@@ -112,40 +153,3 @@ class BaseDocumentFieldsTest(unittest.TestCase):
 
         self.assertEqual("Walter", user_b.first_name)
         self.assertEqual("White", user_b.last_name)
-
-    def test_get_field_values(self):
-        sample = self.Sample(name="John")
-        self.assertEqual({
-            "name": "John",
-            "payment_type": None,
-            "created_at": None
-        }, sample.field_values)
-
-    def test_get_field_values_with_embedded_field(self):
-        sample = self.SampleWithEmbeddedField(name="John")
-        sample.address = Address()
-        sample.address.street = "123 Elm St."
-        sample.address.city = "Anywhere"
-
-        self.assertEqual({
-            "name": "John",
-            "address": {
-                "street": "123 Elm St.",
-                "city": "Anywhere"
-            }}, sample.field_values)
-
-    def test_get_field_values_with_embedded_list_field(self):
-        sample = self.SampleWithEmbeddedListField()
-        address = Address(street="123 Elm Street", city="Anywhere")
-
-        sample.addresses.append(address)
-
-        self.assertEqual({
-            "addresses": [{
-                "street": "123 Elm Street",
-                "city": "Anywhere"
-            }]}, sample.field_values)
-
-    def test_field_default_values(self):
-        sample = self.SampleWithDefaultedField()
-        self.assertEqual("Cthulhu", sample.name)
