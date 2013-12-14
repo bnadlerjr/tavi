@@ -16,6 +16,12 @@ except (IOError, ImportError):
 
 from setuptools import setup
 
+test_requirements = [
+    'coverage==3.7.1',
+    'flake8==2.1.0',
+    'nose==1.1.2'
+]
+
 setup(
     name='Tavi',
     version='0.0.7',
@@ -35,10 +41,7 @@ setup(
     install_requires=[
         "inflection >= 0.2.0",
         "pymongo >= 2.4.1"
-    ],
-    tests_require=[
-        'nose==1.1.2',
-        'coverage==3.7.1'
-    ],
+    ] + test_requirements,
+    tests_require=test_requirements,
     test_suite="nose_collector"
 )
