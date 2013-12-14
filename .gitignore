@@ -3,3 +3,4 @@ dist
 env
 MANIFEST
 Tavi.egg-info
+.coverage

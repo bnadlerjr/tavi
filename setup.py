@@ -19,7 +19,7 @@ from setuptools import setup
 test_requirements = [
     'coverage==3.7.1',
     'flake8==2.1.0',
-    'nose==1.1.2'
+    'nose==1.3.0'
 ]
 
 setup(
