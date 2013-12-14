@@ -31,6 +31,7 @@ class BaseDocumentPropertiesTest(unittest.TestCase):
         password = StringField("password", persist=False)
         payment_type = StringField("payment_type")
         created_at = DateTimeField("created_at")
+        status = StringField("my_status")
 
     class Address(EmbeddedDocument):
         street = StringField("street")
@@ -42,7 +43,7 @@ class BaseDocumentPropertiesTest(unittest.TestCase):
 
     def test_get_fields(self):
         self.assertEqual(
-            ["name", "payment_type", "created_at"],
+            ["name", "payment_type", "created_at", "status"],
             self.sample.fields
         )
 
@@ -51,8 +52,18 @@ class BaseDocumentPropertiesTest(unittest.TestCase):
         self.assertEqual({
             "name": "John",
             "payment_type": None,
-            "created_at": None
+            "created_at": None,
+            "status": None
         }, sample.field_values)
+
+    def test_get_mongo_field_values(self):
+        sample = self.Sample(name="John", status="active")
+        self.assertEqual({
+            "name": "John",
+            "payment_type": None,
+            "created_at": None,
+            "my_status": "active"
+        }, sample.mongo_field_values)
 
     def test_get_errors(self):
         self.sample.name = None

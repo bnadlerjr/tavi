@@ -39,6 +39,7 @@ class DocumentSaveTest(unittest.TestCase):
         created_at = fields.DateTimeField("created_at")
         last_modified_at = fields.DateTimeField("last_modified_at")
         address = fields.EmbeddedField("address", Address)
+        status = fields.StringField("my_status")
 
     def setUp(self):
         super(DocumentSaveTest, self).setUp()
@@ -54,6 +55,14 @@ class DocumentSaveTest(unittest.TestCase):
         self.assertEqual(1, self.db.samples.count())
         actual = list(self.db.samples.find())[0]
         self.assertEqual("John", actual['name'])
+
+    def test_save_uses_mongo_field_names_on_insert(self):
+        self.sample.name = "John"
+        self.sample.status = "inactive"
+        self.sample.save()
+
+        actual = list(self.db.samples.find())[0]
+        self.assertEqual("inactive", actual['my_status'])
 
     def test_save_returns_true_if_success(self):
         self.sample.name = "John"
@@ -84,6 +93,18 @@ class DocumentSaveTest(unittest.TestCase):
     def test_save_returns_false_if_failure(self):
         self.sample.name = None
         self.assertEqual(False, self.sample.save())
+
+    def test_save_uses_mongo_field_names_on_update(self):
+        self.sample.name = "John"
+        self.sample.status = "active"
+        self.sample.save()
+
+        self.sample.status = "inactive"
+        self.sample.save()
+
+        self.assertEqual(1, self.db.samples.count())
+        actual = list(self.db.samples.find())[0]
+        self.assertEqual("inactive", actual['my_status'])
 
     def test_save_updates_existing_documents(self):
         self.sample.name = "John"

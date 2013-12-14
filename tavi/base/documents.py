@@ -58,9 +58,26 @@ class BaseDocument(object):
             set_field_attr(self, field, kwargs.get(field))
 
     @property
+    def fields(self):
+        """Returns the list of fields for the Document."""
+        return self._field_descriptors.keys()
+
+    @property
     def field_values(self):
         """Returns a dictionary containing all fields and their values."""
         return {field: get_field_attr(self, field) for field in self.fields}
+
+    @property
+    def mongo_field_values(self):
+        """Same as field_values except uses the Mongo field names. This way
+        the document can have a field name that is different from the
+        field name persisted in Mongo.
+
+        """
+        return {
+            v.name: get_field_attr(self, k)
+            for k, v in self._field_descriptors.items()
+        }
 
     @property
     def errors(self):
@@ -69,11 +86,6 @@ class BaseDocument(object):
 
         """
         return self._errors
-
-    @property
-    def fields(self):
-        """Returns the list of fields for the Document."""
-        return self._field_descriptors.keys()
 
     @property
     def valid(self):

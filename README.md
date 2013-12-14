@@ -166,6 +166,18 @@ class Address(tavi.documents.EmbeddedDocument):
 
 Fields are how Tavi maps the attributes in your objects to attributes in the document for your collections in MongoDB. All fields inherit from ``tavi.base.fields.BaseField`` which provides some common [validations](#validations).
 
+Fields are initialized with a name, which will be used when persisting the document to Mongo. This name can be different from the class's field name, for example:
+
+```python
+import tavi
+
+class User(tavi.documents.Document):
+    email  = tavi.fields.StringField("email")
+    status = tavi.fields.StringField("my_status")
+```
+
+In the example above, you would refer to the class attribute `status`, but when the document is persisted `my_status` will be used as the name. This is useful if you have to support an existing Mongo database that has a different field name than the one you would like to use in your Python class.
+
 #### <a id="basic-fields"></a>Basic Fields
 
 There are several field types supported:

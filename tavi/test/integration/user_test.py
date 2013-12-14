@@ -9,6 +9,7 @@ class User(Document):
     first_name = fields.StringField("first_name", required=True)
     last_name = fields.StringField("last_name", required=True)
     status = fields.StringField("status", default="active")
+    api_key = fields.StringField("api_key_beta")
 
     @classmethod
     def find_by_email(cls, email):
@@ -41,7 +42,7 @@ class UserTest(unittest.TestCase):
 
     def test_list_fields(self):
         self.assertEqual(
-            ['email', 'first_name', 'last_name', 'status'],
+            ['email', 'first_name', 'last_name', 'status', 'api_key'],
             self.user.fields
         )
 
@@ -135,7 +136,8 @@ class UserPersistenceTest(BaseMongoTest):
         self.user = User(
             email="jdoe@example.com",
             first_name="John",
-            last_name="Doe"
+            last_name="Doe",
+            api_key="1234"
         )
 
     def test_inserts_a_new_user(self):
@@ -148,6 +150,7 @@ class UserPersistenceTest(BaseMongoTest):
         self.assertEqual("jdoe@example.com", users[0]["email"])
         self.assertEqual("John", users[0]["first_name"])
         self.assertEqual("Doe", users[0]["last_name"])
+        self.assertEqual("1234", users[0]["api_key_beta"])
 
     def test_update_a_user(self):
         self.user.save()
