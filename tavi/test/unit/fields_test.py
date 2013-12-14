@@ -513,8 +513,8 @@ class EmbeddedFieldTest(unittest.TestCase):
             Target.f = fields.EmbeddedField("address", Address)
 
         expected_msg = (
-            "expected <class 'unit.fields_test.Address'> to be a subclass of "
-            "tavi.document.EmbeddedDocument"
+            "expected <class 'tavi.test.unit.fields_test.Address'> to be a "
+            "subclass of tavi.document.EmbeddedDocument"
         )
 
         self.assertEqual(expected_msg, exc.exception.message)

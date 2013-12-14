@@ -76,8 +76,8 @@ class EmbeddedListTest(unittest.TestCase):
 
         msg = (
             "This tavi.EmbeddedList only accepts items of type <class "
-            "'unit.embedded_list_test.Address'> (tried to add an object of "
-            "type AnotherEmbeddedDoc)"
+            "'tavi.test.unit.embedded_list_test.Address'> (tried to add an "
+            "object of type AnotherEmbeddedDoc)"
         )
 
         self.assertEqual(msg, exc.exception.message)

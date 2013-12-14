@@ -21,7 +21,11 @@ setup(
     version='0.0.7',
     author='Bob Nadler Jr.',
     author_email='bnadlerjr@gmail.com',
-    packages=['tavi', 'tavi.base', 'tavi.utils'],
+    packages=[
+        'tavi',
+        'tavi.base',
+        'tavi.utils'
+    ],
     url='https://github.com/bnadlerjr/tavi',
     license='LICENSE.txt',
     description='Super thin Mongo object mapper for Python.',
@@ -31,5 +35,10 @@ setup(
     install_requires=[
         "inflection >= 0.2.0",
         "pymongo >= 2.4.1"
-    ]
+    ],
+    tests_require=[
+        'nose==1.1.2',
+        'coverage==3.7.1'
+    ],
+    test_suite="nose_collector"
 )
