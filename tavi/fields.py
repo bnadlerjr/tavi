@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Provides various field types."""
 import re
 import datetime

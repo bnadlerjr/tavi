@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 from integration import BaseMongoTest
 from tavi import fields

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 from pymongo import MongoClient
 from tavi import Connection

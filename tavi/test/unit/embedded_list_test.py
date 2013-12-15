@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 from tavi import fields
 from tavi.documents import Document, EmbeddedDocument

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 from pymongo import MongoClient
 from pymongo.collection import Collection

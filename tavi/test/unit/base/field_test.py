@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 from tavi.base.fields import BaseField
 from tavi.errors import Errors

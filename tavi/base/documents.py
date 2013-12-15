@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """Provides base document support."""
 import collections
 from bson.json_util import dumps, loads

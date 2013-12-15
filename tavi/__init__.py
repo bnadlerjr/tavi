@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """A simple Object Document Mapper for MongoDB"""
 from pymongo import MongoClient
 from pymongo.database import Database

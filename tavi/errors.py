@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Defines custom errors."""
 import inflection
 from tavi.utils import flatten

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Support for timing blocks of code."""
 from __future__ import with_statement
 import time

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from integration import BaseMongoTest
 from tavi.documents import Document, EmbeddedDocument
 from tavi import fields

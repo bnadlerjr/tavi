@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Provides support for dealing with Mongo Documents."""
 from bson.objectid import ObjectId
 from tavi import Connection
