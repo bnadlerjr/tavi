@@ -195,11 +195,9 @@ class Document(BaseDocument):
             elif isinstance(value, collections.Iterable):
                 for item in value:
                     if isinstance(item, EmbeddedDocument):
-                        if name in item.fields:
-                            setattr(item, name, timestamp)
+                        setattr(item, name, timestamp)
             elif isinstance(value, EmbeddedDocument):
-                if name in value.fields:
-                    setattr(value, name, timestamp)
+                setattr(value, name, timestamp)
 
 
 class EmbeddedDocument(BaseDocument):
