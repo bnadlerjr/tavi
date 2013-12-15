@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 from bson import ObjectId
 from datetime import datetime
@@ -365,6 +366,16 @@ class StringFieldTest(unittest.TestCase):
     def setUp(self):
         super(StringFieldTest, self).setUp()
         self.field = fields.StringField("my_field")
+
+    def test_converts_value_to_unicode(self):
+        class Target(Document):
+            f = fields.StringField("my_field")
+            errors = Errors()
+
+        t = Target()
+        my_string = "I sat down for coffee at the café"
+        t.f = str(my_string)
+        self.assertEqual(unicode(my_string, "utf-8"), t.f)
 
     def test_strips_whitespace_from_value(self):
         class Target(Document):
