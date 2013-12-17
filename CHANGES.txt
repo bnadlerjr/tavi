@@ -24,3 +24,5 @@ v1.0.0, 2013-12-17 -- Incompatible API Changes:
                       Backwards Compatible Bug Fixes:
                         * (Issue #33) The variable name of a field can be different from document field name
                         * (Issue #37) Add encoding to all source files
+v1.0.1, 2013-12-17 -- Backwards Compatible Bug Fixes:
+                        * Fix bug where ListFields were not loaded from MongoDB.
