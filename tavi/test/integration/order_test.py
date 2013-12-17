@@ -178,6 +178,27 @@ class OrderTest(BaseMongoTest):
             delta=0.5
         )
 
+    def test_query_order_lines(self):
+        order = Order(
+            name="John Doe",
+            email="jdoe@example.com",
+            pay_type="Mastercard"
+        )
+
+        line_a = OrderLine(quantity=1, total_price=19.99)
+        line_b = OrderLine(quantity=3, total_price=39.99)
+        order.order_lines.append(line_a)
+        order.order_lines.append(line_b)
+
+        self.assertTrue(order.save())
+
+        db_orders = Order.find_all()
+        self.assertEqual(1, len(db_orders))
+
+        db_lines = db_orders[0].order_lines
+        self.assertEqual(1, db_lines[0].quantity)
+        self.assertEqual(19.99, db_lines[0].total_price)
+
     def test_update_with_multiple_order_lines(self):
         order = Order(
             name="John Doe",

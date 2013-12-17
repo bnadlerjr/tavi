@@ -24,6 +24,12 @@ def get_field_attr(cls, field):
 def set_field_attr(cls, field, value):
     """Custom function for setting a tavi.field attribute."""
     field_descriptor = cls._field_descriptors[field]
+
+    if isinstance(value, collections.MutableSequence):
+        for item in value:
+            getattr(cls, field).append(field_descriptor._type(**item))
+        return
+
     if not value:
         value = field_descriptor.default
 

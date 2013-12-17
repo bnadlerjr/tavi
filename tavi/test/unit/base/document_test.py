@@ -2,7 +2,8 @@
 import unittest
 from tavi.base.documents import BaseDocument
 from tavi.documents import EmbeddedDocument
-from tavi.fields import EmbeddedField, ListField, StringField, DateTimeField
+from tavi.fields import EmbeddedField, ListField, StringField
+from tavi.fields import DateTimeField, FloatField
 
 
 class BaseDocumentNoFieldsTest(unittest.TestCase):
@@ -165,3 +166,38 @@ class BaseDocumentInitializationTest(unittest.TestCase):
 
         self.assertEqual("Walter", user_b.first_name)
         self.assertEqual("White", user_b.last_name)
+
+    def test_assign_to_list_field(self):
+        class OrderLine(EmbeddedDocument):
+            price = FloatField("price")
+
+        class Order(BaseDocument):
+            name = StringField("name")
+            total = FloatField("total")
+            order_lines = ListField("order_lines", OrderLine)
+
+        order = Order()
+        order_line = OrderLine(price=3.0)
+        order.order_lines.append(order_line)
+
+        self.assertEqual(3.0, order.order_lines[0].price)
+
+    def test_init_with_embedded_list_args(self):
+        class OrderLine(EmbeddedDocument):
+            price = FloatField("price")
+
+        class Order(BaseDocument):
+            name = StringField("name")
+            total = FloatField("total")
+            order_lines = ListField("order_lines", OrderLine)
+
+        order_hash = {
+            "name": "foo",
+            "total": 1.1,
+            "order_lines": [{
+                    "price": 2.1
+            }]
+        }
+        order = Order(**order_hash)
+        self.assertEqual("foo", order.name)
+        self.assertEqual(2.1, order.order_lines[0].price)
