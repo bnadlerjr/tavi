@@ -2,3 +2,25 @@ v0.0.1, 2013-10-25 -- Initial release.
 v0.0.2, 2013-10-25 -- Remove tests from distribution package.
 v0.0.3, 2013-10-25 -- Debugging packaging errors.
 v0.0.4, 2013-10-25 -- (Hopefully) fix packaging errors.
+v0.0.5, ???        -- Various changes.
+v0.0.6, ???        -- Various changes.
+v0.0.7, ???        -- Various changes.
+v1.0.0, 2013-12-17 -- Incompatible API Changes:
+                        * (Issue #21) utf-8 encode StringFields
+                        * (Issue #32) ListFields are now type checked
+                        * Remove the concept of an EmbeddedField having an owner
+                        * EmbeddedFields are set to None if no value is given
+                        * Default value for EmbeddedFields are type checked.
+                        * Allow IntegerFields, FloatFields and BooleanFields to have None values if not required
+                      
+                      Backwards Compatible Changes:
+                        * Documentation improvements
+                        * Now building with Travis-CI
+                        * Using flake8 for linting, complexity measurement
+                        * Tests run with code coverage
+                        * Various refactorings
+                        * Now embedded fields can have default values.
+                      
+                      Backwards Compatible Bug Fixes:
+                        * (Issue #33) The variable name of a field can be different from document field name
+                        * (Issue #37) Add encoding to all source files
