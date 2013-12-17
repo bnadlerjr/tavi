@@ -493,6 +493,13 @@ Flake8 is used for tracking PEP8 compliance, cyclomatic complexity, etc. Run it 
     flake8 tavi
 
 
+#### Releasing a New Version
+
+1. Increment version in setup.py
+2. Update CHANGES.txt
+3. Commit and tag version
+4. Run `python setup.py sdist upload`
+
 #### Issues / Roadmap
 
 Use GitHub [issues](https://github.com/bnadlerjr/tavi/issues) for reporting bugs and feature requests. This library is meant to be lightweight so I probably won't be adding many features but feel free to submit pull requests for any critical features you think may be missing.
