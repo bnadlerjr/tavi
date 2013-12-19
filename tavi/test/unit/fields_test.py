@@ -511,6 +511,17 @@ class StringFieldTest(unittest.TestCase):
         t.f = ''
         self.assertEqual(0, t.errors.count, t.errors.full_messages)
 
+    def test_validates_choices_on_init(self):
+        class Target(Document):
+            f = fields.StringField("my_field", choices=["type_a", "type_b"])
+            errors = Errors()
+
+        t = Target(f="not a choice")
+        self.assertEqual(
+            ["My Field value must be in list"],
+            t.errors.full_messages
+        )
+
 
 class EmbeddedFieldTest(unittest.TestCase):
     def test_must_be_an_embedded_document(self):
