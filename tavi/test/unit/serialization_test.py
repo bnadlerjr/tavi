@@ -24,8 +24,9 @@ class SerializationTest(unittest.TestCase):
             '{'
             '"sold_on": {"$date": 1377469440000}, '
             '"price": 9.99, '
-            '"name": "Widget", '
-            '"quantity": 3'
+            '"quantity": 3, '
+            '"id": null, '
+            '"name": "Widget"'
             '}'
         )
 
@@ -42,14 +43,15 @@ class SerializationTest(unittest.TestCase):
         expected = (
             '{'
             '"price": 9.99, '
-            '"name": "Widget", '
-            '"quantity": 3'
+            '"quantity": 3, '
+            '"id": null, '
+            '"name": "Widget"'
             '}'
         )
 
         self.assertEqual(
             expected,
-            t.to_json(fields=['name', 'price', 'quantity'])
+            t.to_json(fields=['bson_id', 'name', 'price', 'quantity'])
         )
 
     def test_deserialize_from_json(self):

@@ -104,12 +104,22 @@ class BaseDocument(object):
         fields should be serialized.
 
         """
+        include_bson_id = True
+
         if fields:
-            return dumps({
-                field: self.field_values[field] for field in fields
-            })
+            if "bson_id" not in fields:
+                include_bson_id = False
+            else:
+                fields.remove("bson_id")
+
+            field_map = {field: self.field_values[field] for field in fields}
         else:
-            return dumps(self.field_values)
+            field_map = self.field_values
+
+        if include_bson_id:
+            field_map["id"] = self.bson_id
+
+        return dumps(field_map)
 
     @classmethod
     def from_json(cls, json_str):
