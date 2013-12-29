@@ -81,3 +81,12 @@ class BaseFieldTest(unittest.TestCase):
 
         self.assertEqual(-1, t.afield)
         self.assertEqual(1, t.errors.count)
+
+    def test_default_value_is_set_if_field_is_required(self):
+        class Target(object):
+            f = BaseField("my_field", default=1, required=True)
+            errors = Errors()
+
+        t = Target()
+        t.f = None
+        self.assertEqual(1, t.f)

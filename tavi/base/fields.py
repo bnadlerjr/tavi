@@ -38,6 +38,8 @@ class BaseField(object):
         return getattr(instance, self.attribute_name)
 
     def __set__(self, instance, value):
+        if not value and self.required and self.default:
+            value = self.default
         self.validate(instance, value)
         setattr(instance, self.attribute_name, value)
 
