@@ -1,5 +1,6 @@
 # Tavi
 
+[![PyPI version](https://badge.fury.io/py/Tavi.png)](http://badge.fury.io/py/Tavi)
 [![Build Status](https://travis-ci.org/bnadlerjr/tavi.png)](https://travis-ci.org/bnadlerjr/tavi)
 
 Note: This is Alpha software. Refer to GitHub issues for a list of features that still need to be implemented.
