@@ -42,6 +42,8 @@ class BaseField(object):
             value = self.default
         self.validate(instance, value)
         setattr(instance, self.attribute_name, value)
+        if hasattr(instance, "changed_fields"):
+            instance.changed_fields.add(self.name)
 
     def validate(self, instance, value):
         """Validates the field.

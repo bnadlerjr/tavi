@@ -143,6 +143,12 @@ class DocumentSaveTest(unittest.TestCase):
             self.sample.address.last_modified_at
         )
 
+    def test_change_list_is_cleared_after_saving(self):
+        self.sample.name = "my sample"
+        self.assertEqual(set(["name"]), self.sample.changed_fields)
+        self.sample.save()
+        self.assertEqual(set(), self.sample.changed_fields)
+
 
 class DocumentDeleteTest(unittest.TestCase):
     class Sample(Document):

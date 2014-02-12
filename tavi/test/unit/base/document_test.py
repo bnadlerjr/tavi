@@ -115,6 +115,32 @@ class BaseDocumentPropertiesTest(unittest.TestCase):
             }]}, sample.field_values)
 
 
+class BaseDocumentDirtyFieldCheckingTest(unittest.TestCase):
+    class Sample(BaseDocument):
+        name = StringField("name", required=True)
+        password = StringField("password", persist=False)
+        payment_type = StringField("payment_type")
+        created_at = DateTimeField("created_at")
+        status = StringField("my_status")
+
+    def setUp(self):
+        super(BaseDocumentDirtyFieldCheckingTest, self).setUp()
+        self.sample = self.Sample()
+
+    def test_field_are_not_dirty_when_initialized(self):
+        self.assertEqual(0, len(self.sample.changed_fields))
+
+    def test_field_is_added_to_changed_list_when_changed(self):
+        self.sample.name = "my sample"
+        self.assertEqual(set(["name"]), self.sample.changed_fields)
+
+    def test_field_is_added_to_changed_list_only_once(self):
+        self.sample.name = "my sample"
+        self.assertEqual(set(["name"]), self.sample.changed_fields)
+        self.sample.name = "changed name"
+        self.assertEqual(set(["name"]), self.sample.changed_fields)
+
+
 class BaseDocumentInitializationTest(unittest.TestCase):
     class Sample(BaseDocument):
         name = StringField("name", required=True)

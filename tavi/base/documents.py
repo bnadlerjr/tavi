@@ -63,6 +63,7 @@ class BaseDocument(object):
         self._errors = Errors()
         for field in self.fields:
             set_field_attr(self, field, kwargs.get(field))
+        self.changed_fields = set()
 
     @property
     def fields(self):

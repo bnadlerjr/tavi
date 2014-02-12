@@ -175,6 +175,8 @@ class Document(BaseDocument):
             with timer:
                 self._id = collection.insert(self.mongo_field_values)
 
+        self.changed_fields = set()
+
         logger.info(
             "(%ss) %s %s %s, %s",
             timer.duration_in_seconds(),
