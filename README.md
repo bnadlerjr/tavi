@@ -498,8 +498,9 @@ Flake8 is used for tracking PEP8 compliance, cyclomatic complexity, etc. Run it 
 
 1. Increment version in setup.py
 2. Update CHANGES.txt
-3. Commit and tag version
-4. Run `python setup.py sdist upload`
+3. Commit and tag version (ie. `git tag -a 1.4 -m 'Version 1.4'`)
+4. Push tags (ie. `git push origin 1.4`)
+5. Run `python setup.py sdist upload`
 
 #### Issues / Roadmap
 
