@@ -29,3 +29,6 @@ v1.0.1, 2013-12-17 -- Backwards Compatible Bug Fixes:
 v1.0.2, 2014-02-11 -- Backwards Compatible Bug Fixes:
                         * (Issue #42) Include bson_id when serializing to JSON.
                         * (Issue #44) Required Fields with Default Values.
+v.1.0.3, 2014-02-24 -- Forward Compatable Changes
+                        * Dirty field checking
+                        * Use "upsert" by default when updating
