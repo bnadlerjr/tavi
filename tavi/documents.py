@@ -163,7 +163,8 @@ class Document(BaseDocument):
             with timer:
                 result = collection.update(
                     {"_id": self._id},
-                    {"$set": self.mongo_field_values}
+                    {"$set": self.mongo_field_values},
+                    upsert=True
                 )
 
             if result.get("err"):
