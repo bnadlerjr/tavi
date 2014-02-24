@@ -159,16 +159,23 @@ class Document(BaseDocument):
         self.__update_timestamps("last_modified_at", now)
 
         if self.bson_id:
-            operation = "UPDATE"
-            with timer:
-                result = collection.update(
-                    {"_id": self._id},
-                    {"$set": self.mongo_field_values},
-                    upsert=True
-                )
+            if collection.find_one(self._id):
+                operation = "UPDATE"
+                with timer:
+                    result = collection.update(
+                        {"_id": self._id},
+                        {"$set": self.mongo_field_values}
+                    )
 
-            if result.get("err"):
-                logger.error(result.get("err"))
+                if result.get("err"):
+                    logger.error(result.get("err"))
+            else:
+                operation = "UPSERT"
+                self.__update_timestamps("created_at", now)
+
+                with timer:
+                    self._id = collection.insert(self.mongo_field_values)
+
         else:
             operation = "INSERT"
             self.__update_timestamps("created_at", now)
