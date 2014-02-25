@@ -73,6 +73,7 @@ class BooleanFieldTest(unittest.TestCase):
 
         self.assertEqual(False, t.f)
 
+
 class DateTimeFieldTest(unittest.TestCase):
     def test_validates_is_datetime(self):
         class Target(Document):

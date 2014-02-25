@@ -29,8 +29,8 @@ class DocumentTest(unittest.TestCase):
 
     def test_handles_false_boolean_field(self):
         class Target(Document):
-            flag = fields.BooleanField("flag", default = True)
-            
+            flag = fields.BooleanField("flag", default=True)
+
         t = Target()
         t.flag = False
         t.save()
