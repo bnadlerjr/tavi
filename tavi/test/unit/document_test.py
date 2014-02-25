@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+from bson.objectid import ObjectId
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.database import Database
@@ -61,6 +62,15 @@ class DocumentSaveTest(unittest.TestCase):
         self.sample = self.Sample()
 
     def test_saves_the_document(self):
+        self.sample.name = "John"
+        self.sample.save()
+
+        self.assertEqual(1, self.db.samples.count())
+        actual = list(self.db.samples.find())[0]
+        self.assertEqual("John", actual['name'])
+
+    def test_upserts_document_if_id_is_given(self):
+        self.sample._id = ObjectId()
         self.sample.name = "John"
         self.sample.save()
 
