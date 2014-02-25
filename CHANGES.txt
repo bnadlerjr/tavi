@@ -32,3 +32,6 @@ v1.0.2, 2014-02-11 -- Backwards Compatible Bug Fixes:
 v.1.0.3, 2014-02-24 -- Forward Compatable Changes
                         * Dirty field checking
                         * Use "upsert" by default when updating
+v.1.0.4, 2014-02-25 -- Forward Compatable Changes
+                        * Test for Document#save "upsert"
+                        * (Issue #49) Problems with boolean fields
