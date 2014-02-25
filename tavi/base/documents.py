@@ -29,7 +29,7 @@ def set_field_attr(cls, field, value):
             getattr(cls, field).append(field_descriptor._type(**item))
         return
 
-    if not value:
+    if None == value:
         value = field_descriptor.default
 
     if isinstance(value, dict):

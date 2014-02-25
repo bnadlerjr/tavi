@@ -27,6 +27,17 @@ class DocumentTest(unittest.TestCase):
             self.Sample.collection
         )
 
+    def test_handles_false_boolean_field(self):
+        class Target(Document):
+            flag = fields.BooleanField("flag", default = True)
+            
+        t = Target()
+        t.flag = False
+        t.save()
+
+        from_db = Target.find_all()[0]
+        self.assertEqual(False, from_db.flag)
+
 
 class Address(EmbeddedDocument):
     street = fields.StringField("street")

@@ -53,6 +53,25 @@ class BooleanFieldTest(unittest.TestCase):
             t.errors.full_messages
         )
 
+    def test_default_true_doesnot_override_false_value(self):
+        class Target(Document):
+            f = fields.BooleanField("my_boolean", default=True)
+            errors = Errors()
+
+        t = Target()
+        t.f = False
+
+        self.assertEqual(False, t.f)
+
+    def test_default_true_and_required_true_doesnot_override_false_value(self):
+        class Target(Document):
+            f = fields.BooleanField("my_boolean", default=True, required=True)
+            errors = Errors()
+
+        t = Target()
+        t.f = False
+
+        self.assertEqual(False, t.f)
 
 class DateTimeFieldTest(unittest.TestCase):
     def test_validates_is_datetime(self):
