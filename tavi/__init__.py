@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """A simple Object Document Mapper for MongoDB"""
-from pymongo import MongoClient
+from pymongo import MongoClient, MongoReplicaSetClient
 from pymongo.database import Database
 import collections
 import tavi
@@ -16,10 +16,15 @@ class Connection(object):
     def setup(cls, database_name, **kwargs):
         """Sets ups the Mongo connection. *database_name* is the name of the
         database to connect to. **kwargs** are the same options that can be
-        passed to *MongoClient*.
+        passed to *MongoClient*. If replicaSet is present in the host, a
+        *MongoReplicaSetClient* will be used instead.
 
         """
-        client = MongoClient(**kwargs)
+        host = kwargs.get("host", "")
+        if host.find("replicaSet") > 0:
+            client = MongoReplicaSetClient(**kwargs)
+        else:
+            client = MongoClient(**kwargs)
         cls.client = client
         cls.database = Database(client, database_name)
 
