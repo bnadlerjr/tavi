@@ -98,6 +98,7 @@ class BaseDocument(object):
     @property
     def valid(self):
         """Indicates if all the fields in the Document are valid."""
+        self.__validate__()
         return 0 == self.errors.count
 
     def to_json(self, fields=None):
@@ -127,3 +128,10 @@ class BaseDocument(object):
         """Deserialize a JSON string into a Document model object."""
         attrs = loads(json_str)
         return cls(**attrs)
+
+    def __validate__(self):
+        """Override for model level validations. This method will be called by
+        the #valid property.
+
+        """
+        pass

@@ -20,8 +20,13 @@ class User(Document):
     def find_by_first_name(cls, first_name):
         return cls.find({"first_name": first_name})
 
+    def __validate__(self):
+        super(User, self).__validate__()
+        if not self.bson_id and User.find_by_email(self.email):
+            self.errors.add("email", "must be unique")
 
-class UserTest(unittest.TestCase):
+
+class UserTest(BaseMongoTest):
     def setUp(self):
         super(UserTest, self).setUp()
         self.user = User(
@@ -168,6 +173,21 @@ class UserPersistenceTest(BaseMongoTest):
 
         self.assertIsNone(self.user.bson_id)
         self.assertEqual(0, self.db.users.count())
+
+    def test_model_level_validation(self):
+        self.assertTrue(self.user.save(), self.user.errors.full_messages)
+        another_user = User(
+            email="jdoe@example.com",
+            first_name="Jane",
+            last_name="Doe",
+            api_key="4567"
+        )
+
+        self.assertFalse(another_user.save())
+        self.assertEqual(
+            ["Email must be unique"],
+            another_user.errors.full_messages
+        )
 
     def test_delete_a_user(self):
         self.user.save()
