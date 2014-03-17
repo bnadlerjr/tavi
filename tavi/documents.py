@@ -144,6 +144,9 @@ class Document(BaseDocument):
         successful. Ensures that the Document is valid before saving and
         returns False if it was not.
 
+        This function performs an upsert if the model has an ID, but is not in
+        the database.
+
         If the document model has a field named 'created_at', this field's
         value will be set to the current time when the document is inserted.
 
