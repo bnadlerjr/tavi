@@ -22,11 +22,11 @@ class SerializationTest(unittest.TestCase):
 
         expected = (
             '{'
+            '"id": null, '
             '"sold_on": {"$date": 1377469440000}, '
             '"price": 9.99, '
-            '"quantity": 3, '
-            '"id": null, '
-            '"name": "Widget"'
+            '"name": "Widget", '
+            '"quantity": 3'
             '}'
         )
 
@@ -42,10 +42,10 @@ class SerializationTest(unittest.TestCase):
 
         expected = (
             '{'
-            '"price": 9.99, '
-            '"quantity": 3, '
             '"id": null, '
-            '"name": "Widget"'
+            '"price": 9.99, '
+            '"name": "Widget", '
+            '"quantity": 3'
             '}'
         )
 
