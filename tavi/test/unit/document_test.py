@@ -247,12 +247,17 @@ class DocumentFindTest(unittest.TestCase):
     def test_count(self):
         self.assertEqual(3, self.Sample.count())
 
+
 class DocumentLoadOldSchemaTest(unittest.TestCase):
     """Tests the loading of data without fields which now exist in model"""
     class Sample(Document):
         first_name = fields.StringField("first_name", required=True)
         last_name = fields.StringField("last_name",  required=True)
-        email = fields.StringField("email", required=True, default="default email")
+        email = fields.StringField(
+            "email",
+            required=True,
+            default="default email")
+
         address = fields.StringField("address", required=False)
 
     def setUp(self):
@@ -279,6 +284,7 @@ class DocumentLoadOldSchemaTest(unittest.TestCase):
     def test_new_field_with_default(self):
         item = self.Sample.find_by_id(self.ids[0])
         self.assertEqual('default email', item.email)
+
 
 class EmbeddedDocumentTest(unittest.TestCase):
     class Sample(EmbeddedDocument):
