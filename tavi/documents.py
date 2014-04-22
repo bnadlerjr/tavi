@@ -138,7 +138,7 @@ class Document(BaseDocument):
 
         return found_record
 
-    def save(self):
+    def save(self, w=1, wtimeout=0, j=False):
         """Saves the Document by inserting it into the collection if it does
         not exist or updating it if it does. Returns True if save was
         successful. Ensures that the Document is valid before saving and
@@ -150,6 +150,18 @@ class Document(BaseDocument):
         If the document model has a field named 'created_at', this field's
         value will be set to the current time when the document is inserted.
 
+        Supports the following arguments that are passed to pymongo:
+
+        w: Write concern level. Default is 1
+        wtimeout: Timeout in ms for write concern. Default is 0
+        j: Journaling option for write concern. Default is False
+
+        See Pymongo docs for more information on these arguments:
+        http://api.mongodb.org/python/current/api/pymongo/collection.html
+
+        See the Mongo docs for more information on Write Concern:
+        http://docs.mongodb.org/manual/core/write-concern/
+
         """
         if not self.valid:
             return False
@@ -157,6 +169,9 @@ class Document(BaseDocument):
         collection = self.__class__.collection
         timer = Timer()
         operation = None
+
+        write_opts = frozenset(["w", "j", "wtimeout"])
+        kwargs = {k: v for k, v in locals().iteritems() if k in write_opts}
 
         now = datetime.datetime.utcnow()
         self.__update_timestamps("last_modified_at", now)
@@ -167,7 +182,8 @@ class Document(BaseDocument):
                 result = collection.update(
                     {"_id": self._id},
                     {"$set": self.mongo_field_values},
-                    upsert=True
+                    upsert=True,
+                    **kwargs
                 )
 
             if result.get("err"):
@@ -178,7 +194,7 @@ class Document(BaseDocument):
             self.__update_timestamps("created_at", now)
 
             with timer:
-                self._id = collection.insert(self.mongo_field_values)
+                self._id = collection.insert(self.mongo_field_values, **kwargs)
 
         self.changed_fields = set()
 
