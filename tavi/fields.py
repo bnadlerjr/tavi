@@ -167,7 +167,7 @@ class StringField(BaseField):
         self.regex = re.compile(pattern) if pattern else None
 
     def __set__(self, instance, unstripped_value):
-        value = unstripped_value.strip() if unstripped_value else None
+        value = str(unstripped_value).strip() if unstripped_value else None
         if isinstance(value, str):
             value = unicode(value, "utf-8")
         super(StringField, self).__set__(instance, value)

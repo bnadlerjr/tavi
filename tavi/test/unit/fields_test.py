@@ -542,6 +542,15 @@ class StringFieldTest(unittest.TestCase):
             t.errors.full_messages
         )
 
+    def test_attempt_to_convert_to_string(self):
+        class Target(Document):
+            f = fields.StringField("my_field")
+            errors = Errors()
+
+        t = Target()
+        t.f = 5
+        self.assertEqual("5", t.f)
+
 
 class EmbeddedFieldTest(unittest.TestCase):
     def test_must_be_an_embedded_document(self):
