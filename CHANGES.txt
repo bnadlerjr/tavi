@@ -35,3 +35,9 @@ v.1.0.3, 2014-02-24 -- Forward Compatable Changes
 v.1.0.4, 2014-02-25 -- Forward Compatable Changes
                         * Test for Document#save "upsert"
                         * (Issue #49) Problems with boolean fields
+v.1.1.0, 2014-04-29 -- Forward Compatable Changes
+                        * Uses MongoReplicaSetClient if hostname includes "replicaSet"
+                        * (Issue #51) Model level validations
+                        * Add write concern option support for Document#save
+                        * (Issue #48) StringFields and non-string values
+                        * Various documentation fixes and test clarifications
