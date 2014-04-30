@@ -21,7 +21,7 @@ class BaseField(object):
 
     def __init__(
         self, name,
-        required=False, default=None, choices=None, persist=True
+        required=False, default=None, choices=None, persist=True, unique=False
     ):
         self.name = name
         self.attribute_name = "_%s" % name
@@ -29,6 +29,7 @@ class BaseField(object):
         self.default = default
         self.choices = choices
         self.persist = persist
+        self.unique = unique
         self.creation_order = BaseField._creation_counter
         BaseField._creation_counter += 1
 

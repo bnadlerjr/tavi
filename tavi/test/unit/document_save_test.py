@@ -14,7 +14,7 @@ class Address(EmbeddedDocument):
 
 class DocumentSaveTest(unittest.TestCase):
     class Sample(Document):
-        name = fields.StringField("name", required=True)
+        name = fields.StringField("name", required=True, unique=True)
         created_at = fields.DateTimeField("created_at")
         last_modified_at = fields.DateTimeField("last_modified_at")
         address = fields.EmbeddedField("address", Address)
@@ -135,3 +135,30 @@ class DocumentSaveTest(unittest.TestCase):
         self.assertEqual(set(["name"]), self.sample.changed_fields)
         self.sample.save()
         self.assertEqual(set(), self.sample.changed_fields)
+
+    def test_unique_field_on_insert(self):
+        self.sample.name = "John"
+        assert self.sample.save(), self.sample.errors.full_messages
+
+        another_sample = self.Sample(name="John")
+        self.assertFalse(another_sample.save())
+
+        self.assertEqual(
+            ["Name must be unique"],
+            another_sample.errors.full_messages
+        )
+
+    def test_unique_field_on_update(self):
+        self.sample.name = "John"
+        assert self.sample.save(), self.sample.errors.full_messages
+
+        another_sample = self.Sample(name="Mike")
+        assert another_sample.save(), another_sample.errors.full_messages
+
+        another_sample.name = "John"
+        self.assertFalse(another_sample.save())
+
+        self.assertEqual(
+            ["Name must be unique"],
+            another_sample.errors.full_messages
+        )

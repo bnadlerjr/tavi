@@ -9,6 +9,8 @@ import collections
 import datetime
 import inflection
 import logging
+import pymongo
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +52,13 @@ class Document(BaseDocument):
     def __init__(self, **kwargs):
         self._id = kwargs.pop("_id", None)
         super(Document, self).__init__(**kwargs)
+        for k, v in self._field_descriptors.items():
+            if v.unique:
+                opts = {
+                    "name": "%s_unique_index" % k,
+                    "unique": True
+                }
+                self.__class__.collection.create_index(k, **opts)
 
     @property
     def bson_id(self):
@@ -166,10 +175,6 @@ class Document(BaseDocument):
         if not self.valid:
             return False
 
-        collection = self.__class__.collection
-        timer = Timer()
-        operation = None
-
         write_opts = frozenset(["w", "j", "wtimeout"])
         kwargs = {k: v for k, v in locals().iteritems() if k in write_opts}
 
@@ -177,24 +182,31 @@ class Document(BaseDocument):
         self.__update_timestamps("last_modified_at", now)
 
         if self.bson_id:
-            operation = "UPDATE"
-            with timer:
-                result = collection.update(
-                    {"_id": self._id},
-                    {"$set": self.mongo_field_values},
-                    upsert=True,
-                    **kwargs
-                )
-
-            if result.get("err"):
-                logger.error(result.get("err"))
-
+            operation = "update"
+            spec = [{"_id": self._id}, {"$set": self.mongo_field_values}]
+            kwargs["upsert"] = True
         else:
-            operation = "INSERT"
+            operation = "insert"
             self.__update_timestamps("created_at", now)
+            spec = [self.mongo_field_values]
 
-            with timer:
-                self._id = collection.insert(self.mongo_field_values, **kwargs)
+        timer = Timer()
+        with timer:
+            try:
+                operation_func = getattr(self.__class__.collection, operation)
+                result = operation_func(*spec, **kwargs)
+                if isinstance(result, ObjectId):
+                    self._id = result
+            except pymongo.errors.DuplicateKeyError as e:
+                logger.warn(
+                    "%s %s failed due to unique index violation (%s)",
+                    self.__class__.__name__,
+                    operation.upper(),
+                    e.message
+                )
+                f = re.search(r'\$(.+)_unique_index', e.message).group(1)
+                self.errors.add(f, "must be unique")
+                return False
 
         self.changed_fields = set()
 
@@ -202,7 +214,7 @@ class Document(BaseDocument):
             "(%ss) %s %s %s, %s",
             timer.duration_in_seconds(),
             self.__class__.__name__,
-            operation,
+            operation.upper(),
             self.mongo_field_values,
             self._id
         )

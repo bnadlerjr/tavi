@@ -6,7 +6,7 @@ from tavi.documents import Document
 
 
 class User(Document):
-    email = fields.StringField("email", required=True)
+    email = fields.StringField("email", required=True, unique=True)
     first_name = fields.StringField("first_name", required=True)
     last_name = fields.StringField("last_name", required=True)
     status = fields.StringField("status", default="active")
@@ -22,8 +22,8 @@ class User(Document):
 
     def __validate__(self):
         super(User, self).__validate__()
-        if not self.bson_id and User.find_by_email(self.email):
-            self.errors.add("email", "must be unique")
+        if self.email and not self.email.startswith("jdoe"):
+            self.errors.add("email", "must start with jdoe")
 
 
 class UserTest(BaseMongoTest):
@@ -177,6 +177,29 @@ class UserPersistenceTest(BaseMongoTest):
     def test_model_level_validation(self):
         self.assertTrue(self.user.save(), self.user.errors.full_messages)
         another_user = User(
+            email="jsmith@example.com",
+            first_name="Jane",
+            last_name="Doe",
+            api_key="4567"
+        )
+
+        self.assertFalse(another_user.save())
+        self.assertEqual(
+            ["Email must start with jdoe"],
+            another_user.errors.full_messages
+        )
+
+    def test_delete_a_user(self):
+        self.user.save()
+        self.assertEqual(1, self.db.users.count())
+
+        self.user.delete()
+        self.assertEqual(0, self.db.users.count())
+
+    def test_unique_field(self):
+        assert self.user.save(), self.user.errors.full_messages
+
+        another_user = User(
             email="jdoe@example.com",
             first_name="Jane",
             last_name="Doe",
@@ -188,13 +211,6 @@ class UserPersistenceTest(BaseMongoTest):
             ["Email must be unique"],
             another_user.errors.full_messages
         )
-
-    def test_delete_a_user(self):
-        self.user.save()
-        self.assertEqual(1, self.db.users.count())
-
-        self.user.delete()
-        self.assertEqual(0, self.db.users.count())
 
 
 class UserQueryTest(BaseMongoTest):
