@@ -179,6 +179,12 @@ class Document(BaseDocument):
         kwargs = {k: v for k, v in locals().iteritems() if k in write_opts}
 
         now = datetime.datetime.utcnow()
+        if hasattr(self, "created_at"):
+            old_created_at = self.created_at
+
+        if hasattr(self, "last_modified_at"):
+            old_last_modified_at = self.last_modified_at
+
         self.__update_timestamps("last_modified_at", now)
 
         if self.bson_id:
@@ -192,21 +198,30 @@ class Document(BaseDocument):
 
         timer = Timer()
         with timer:
+            insert_or_update = getattr(self.__class__.collection, operation)
             try:
-                operation_func = getattr(self.__class__.collection, operation)
-                result = operation_func(*spec, **kwargs)
+                result = insert_or_update(*spec, **kwargs)
                 if isinstance(result, ObjectId):
                     self._id = result
-            except pymongo.errors.DuplicateKeyError as e:
-                logger.warn(
-                    "%s %s failed due to unique index violation (%s)",
-                    self.__class__.__name__,
-                    operation.upper(),
-                    e.message
-                )
-                f = re.search(r'\$(.+)_unique_index', e.message).group(1)
-                self.errors.add(f, "must be unique")
-                return False
+            except pymongo.errors.PyMongoError as e:
+                if hasattr(self, "created_at"):
+                    self.__update_timestamps("created_at", old_created_at)
+                if hasattr(self, "last_modified_at"):
+                    self.__update_timestamps(
+                        "last_modified_at",
+                        old_last_modified_at)
+
+                if isinstance(e, pymongo.errors.DuplicateKeyError):
+                    logger.warn(
+                        "%s %s failed due to unique index violation (%s)",
+                        self.__class__.__name__,
+                        operation.upper(),
+                        e.message
+                    )
+                    f = re.search(r'\$(.+)_unique_index', e.message).group(1)
+                    self.errors.add(f, "must be unique")
+                    return False
+                raise
 
         self.changed_fields = set()
 
@@ -232,7 +247,8 @@ class Document(BaseDocument):
                     if isinstance(item, EmbeddedDocument):
                         setattr(item, name, timestamp)
             elif isinstance(value, EmbeddedDocument):
-                setattr(value, name, timestamp)
+                if hasattr(value, name):
+                    setattr(value, name, timestamp)
 
 
 class EmbeddedDocument(BaseDocument):

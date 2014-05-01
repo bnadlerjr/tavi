@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import pymongo
 import unittest
 from bson.objectid import ObjectId
 from pymongo import MongoClient
@@ -61,6 +62,26 @@ class DocumentSaveTest(unittest.TestCase):
         self.sample.save()
         self.assertIsNotNone(self.sample.bson_id)
 
+    def test_does_not_add_created_at_if_not_present(self):
+        class AnotherAddress(EmbeddedDocument):
+            street = fields.StringField("street")
+
+        class AnotherSample(Document):
+            name = fields.StringField("name", required=True, unique=True)
+            address = fields.EmbeddedField("address", AnotherAddress)
+
+        address = AnotherAddress(street="42 Wood St.")
+        sample = AnotherSample(name="John")
+        sample.address = address
+
+        assert sample.save(), sample.errors.full_messages
+        self.assertFalse(hasattr(sample, "created_at"))
+        self.assertFalse(hasattr(sample.address, "created_at"))
+
+        record = list(self.db.another_samples.find())[0]
+        self.assertNotIn("created_at", record)
+        self.assertNotIn("created_at", record["address"])
+
     def test_save_sets_created_at_if_present(self):
         self.sample.name = "John"
         self.assertTrue(self.sample.save())
@@ -72,6 +93,47 @@ class DocumentSaveTest(unittest.TestCase):
         self.sample.address = address
         self.assertTrue(self.sample.save())
         self.assertIsNotNone(self.sample.address.created_at)
+
+    def test_does_not_set_created_at_on_update(self):
+        self.sample.name = "John"
+        assert self.sample.save(), self.sample.errors.full_messages
+        created_at = self.sample.created_at
+        self.assertIsNotNone(created_at)
+
+        self.sample.name = "Paul"
+        assert self.sample.save(), self.sample.errors.full_messages
+
+        self.assertEqual(created_at, self.sample.created_at)
+
+    def test_save_does_not_set_created_at_if_invalid_on_insert(self):
+        self.assertIsNone(self.sample.created_at)
+        self.sample.save()
+        self.assertIsNone(self.sample.created_at)
+
+    def test_save_does_not_set_created_at_if_error_on_insert(self):
+        self.sample.name = "John"
+        self.assertIsNone(self.sample.created_at)
+        with self.assertRaises(pymongo.errors.OperationFailure):
+            self.sample.save(w=3)
+        self.assertIsNone(self.sample.created_at)
+
+    def test_does_not_set_embedded_doc_created_at_if_invalid_on_insert(self):
+        address = Address(street="123 Elm St.")
+        self.sample.address = address
+
+        self.assertIsNone(self.sample.address.created_at)
+        self.sample.save()
+        self.assertIsNone(self.sample.address.created_at)
+
+    def test_does_not_set_embedded_doc_created_at_if_error_on_insert(self):
+        address = Address(street="123 Elm St.")
+        self.sample.name = "John"
+        self.sample.address = address
+        self.assertIsNone(self.sample.address.created_at)
+
+        with self.assertRaises(pymongo.errors.OperationFailure):
+            self.sample.save(w=3)
+        self.assertIsNone(self.sample.address.created_at)
 
     def test_does_not_save_if_invalid(self):
         self.sample.name = None
@@ -105,6 +167,26 @@ class DocumentSaveTest(unittest.TestCase):
         actual = list(self.db.samples.find())[0]
         self.assertEqual("Joe", actual['name'])
 
+    def test_does_not_add_last_modified_if_not_present(self):
+        class AnotherAddress(EmbeddedDocument):
+            street = fields.StringField("street")
+
+        class AnotherSample(Document):
+            name = fields.StringField("name", required=True, unique=True)
+            address = fields.EmbeddedField("address", AnotherAddress)
+
+        address = AnotherAddress(street="42 Wood St.")
+        sample = AnotherSample(name="John")
+        sample.address = address
+
+        assert sample.save(), sample.errors.full_messages
+        self.assertFalse(hasattr(sample, "last_modified_at"))
+        self.assertFalse(hasattr(sample.address, "last_modified_at"))
+
+        record = list(self.db.another_samples.find())[0]
+        self.assertNotIn("last_modified_at", record)
+        self.assertNotIn("last_modified_at", record["address"])
+
     def test_save_sets_last_modified_if_present(self):
         self.sample.name = "John"
         self.sample.save()
@@ -130,6 +212,36 @@ class DocumentSaveTest(unittest.TestCase):
             self.sample.address.last_modified_at
         )
 
+    def test_save_does_not_set_last_modified_if_invalid_on_insert(self):
+        self.assertIsNone(self.sample.last_modified_at)
+        self.assertFalse(self.sample.save())
+        self.assertIsNone(self.sample.last_modified_at)
+
+    def test_save_does_not_set_last_modified_if_error_on_insert(self):
+        self.sample.name = "John"
+        self.assertIsNone(self.sample.last_modified_at)
+        with self.assertRaises(pymongo.errors.OperationFailure):
+            self.sample.save(w=3)
+        self.assertIsNone(self.sample.last_modified_at)
+
+    def test_does_not_set_embedded_doc_last_modified_if_invalid_insert(self):
+        address = Address(street="123 Elm St.")
+        self.sample.address = address
+
+        self.assertIsNone(self.sample.address.last_modified_at)
+        self.sample.save()
+        self.assertIsNone(self.sample.address.last_modified_at)
+
+    def test_does_not_set_embedded_doc_last_modified_if_error_on_insert(self):
+        address = Address(street="123 Elm St.")
+        self.sample.name = "John"
+        self.sample.address = address
+        self.assertIsNone(self.sample.address.last_modified_at)
+
+        with self.assertRaises(pymongo.errors.OperationFailure):
+            self.sample.save(w=3)
+        self.assertIsNone(self.sample.address.last_modified_at)
+
     def test_change_list_is_cleared_after_saving(self):
         self.sample.name = "my sample"
         self.assertEqual(set(["name"]), self.sample.changed_fields)
@@ -141,12 +253,14 @@ class DocumentSaveTest(unittest.TestCase):
         assert self.sample.save(), self.sample.errors.full_messages
 
         another_sample = self.Sample(name="John")
+        self.assertIsNone(another_sample.created_at)
         self.assertFalse(another_sample.save())
 
         self.assertEqual(
             ["Name must be unique"],
             another_sample.errors.full_messages
         )
+        self.assertIsNone(another_sample.created_at)
 
     def test_unique_field_on_update(self):
         self.sample.name = "John"
