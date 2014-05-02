@@ -3,10 +3,9 @@
 from bson.objectid import ObjectId
 from tavi import Connection
 from tavi.base.documents import BaseDocument, BaseDocumentMetaClass
+from tavi.commands import Insert, Update
 from tavi.errors import TaviConnectionError
 from tavi.utils.timer import Timer
-import collections
-import datetime
 import inflection
 import logging
 import pymongo
@@ -178,44 +177,21 @@ class Document(BaseDocument):
         write_opts = frozenset(["w", "j", "wtimeout"])
         kwargs = {k: v for k, v in locals().iteritems() if k in write_opts}
 
-        now = datetime.datetime.utcnow()
-        if hasattr(self, "created_at"):
-            old_created_at = self.created_at
-
-        if hasattr(self, "last_modified_at"):
-            old_last_modified_at = self.last_modified_at
-
-        self.__update_timestamps("last_modified_at", now)
-
-        if self.bson_id:
-            operation = "update"
-            spec = [{"_id": self._id}, {"$set": self.mongo_field_values}]
-            kwargs["upsert"] = True
-        else:
-            operation = "insert"
-            self.__update_timestamps("created_at", now)
-            spec = [self.mongo_field_values]
+        operation = Update if self.bson_id else Insert
+        operation = operation(self, **kwargs)
 
         timer = Timer()
         with timer:
-            insert_or_update = getattr(self.__class__.collection, operation)
             try:
-                result = insert_or_update(*spec, **kwargs)
-                if isinstance(result, ObjectId):
-                    self._id = result
+                operation.execute()
             except pymongo.errors.PyMongoError as e:
-                if hasattr(self, "created_at"):
-                    self.__update_timestamps("created_at", old_created_at)
-                if hasattr(self, "last_modified_at"):
-                    self.__update_timestamps(
-                        "last_modified_at",
-                        old_last_modified_at)
+                operation.reset_fields()
 
                 if isinstance(e, pymongo.errors.DuplicateKeyError):
                     logger.warn(
                         "%s %s failed due to unique index violation (%s)",
                         self.__class__.__name__,
-                        operation.upper(),
+                        operation.name,
                         e.message
                     )
                     f = re.search(r'\$(.+)_unique_index', e.message).group(1)
@@ -229,26 +205,11 @@ class Document(BaseDocument):
             "(%ss) %s %s %s, %s",
             timer.duration_in_seconds(),
             self.__class__.__name__,
-            operation.upper(),
+            operation.name,
             self.mongo_field_values,
             self._id
         )
         return True
-
-    def __update_timestamps(self, name, timestamp):
-        # TODO: Should this be pulled out into a generic function? i.e.
-        #       set_nested_field_attr(cls, field, value)
-        for field in self.fields:
-            value = getattr(self, field)
-            if name == field:
-                setattr(self, name, timestamp)
-            elif isinstance(value, collections.Iterable):
-                for item in value:
-                    if isinstance(item, EmbeddedDocument):
-                        setattr(item, name, timestamp)
-            elif isinstance(value, EmbeddedDocument):
-                if hasattr(value, name):
-                    setattr(value, name, timestamp)
 
 
 class EmbeddedDocument(BaseDocument):
