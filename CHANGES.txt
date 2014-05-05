@@ -41,3 +41,5 @@ v.1.1.0, 2014-04-29 -- Forward Compatable Changes
                         * Add write concern option support for Document#save
                         * (Issue #48) StringFields and non-string values
                         * Various documentation fixes and test clarifications
+v.1.2.0, 2014-05-05 -- Forward Compatable Changes
+                        * (Issue #3) Uniqueness Validation
