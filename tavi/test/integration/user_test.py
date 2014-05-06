@@ -175,7 +175,7 @@ class UserPersistenceTest(BaseMongoTest):
         self.assertEqual(0, self.db.users.count())
 
     def test_model_level_validation(self):
-        self.assertTrue(self.user.save(), self.user.errors.full_messages)
+        assert self.user.save(), self.user.errors.full_messages
         another_user = User(
             email="jsmith@example.com",
             first_name="Jane",

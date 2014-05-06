@@ -73,12 +73,12 @@ class DocumentUpdateTest(unittest.TestCase):
     def test_sets_last_modified_for_any_embedded_documents(self):
         self.sample.name = "John"
         self.sample.address = Address()
-        self.assertTrue(self.sample.save(), self.sample.errors.full_messages)
+        assert self.sample.save(), self.sample.errors.full_messages
         last_modified = self.sample.address.last_modified_at
         self.assertIsNotNone(last_modified)
 
         self.sample.name = "Joe"
-        self.assertTrue(self.sample.save(), self.sample.errors.full_messages)
+        assert self.sample.save(), self.sample.errors.full_messages
 
         self.assertNotEqual(
             last_modified,

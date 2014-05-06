@@ -66,7 +66,7 @@ class OrderTest(BaseMongoTest):
         order.address.state = "NJ"
         order.address.postal_code = "00000"
 
-        self.assertTrue(order.save())
+        assert order.save(), order.errors.full_messages
 
         orders = list(self.db.orders.find())
         self.assertEqual(1, len(orders))
@@ -89,9 +89,9 @@ class OrderTest(BaseMongoTest):
         order.address.state = "NJ"
         order.address.postal_code = "00000"
 
-        self.assertTrue(order.save())
+        assert order.save(), order.errors.full_messages
         order.address.street = "1313 Mockingbird Lane"
-        self.assertTrue(order.save())
+        assert order.save(), order.errors.full_messages
 
         orders = list(self.db.orders.find())
         self.assertEqual(1, len(orders))
@@ -114,7 +114,7 @@ class OrderTest(BaseMongoTest):
         order.order_lines.append(line_a)
         order.order_lines.append(line_b)
 
-        self.assertTrue(order.save())
+        assert order.save(), order.errors.full_messages
 
         orders = list(self.db.orders.find())
         lines = orders[0]["order_lines"]
@@ -143,13 +143,13 @@ class OrderTest(BaseMongoTest):
         order.order_lines.append(line_a)
         order.order_lines.append(line_b)
 
-        self.assertTrue(order.save())
+        assert order.save(), order.errors.full_messages
         orders = list(self.db.orders.find())
         self.assertEqual(1, len(orders))
         self.assertEqual(2, len(orders[0]["order_lines"]))
 
         order.order_lines[0].quantity = 42
-        self.assertTrue(order.save())
+        assert order.save(), order.errors.full_messages
 
         orders = list(self.db.orders.find())
         lines = orders[0]["order_lines"]
@@ -190,7 +190,7 @@ class OrderTest(BaseMongoTest):
         order.order_lines.append(line_a)
         order.order_lines.append(line_b)
 
-        self.assertTrue(order.save())
+        assert order.save(), order.errors.full_messages
 
         db_orders = Order.find_all()
         self.assertEqual(1, len(db_orders))
@@ -211,13 +211,13 @@ class OrderTest(BaseMongoTest):
         order.order_lines.append(line_a)
         order.order_lines.append(line_b)
 
-        self.assertTrue(order.save())
+        assert order.save(), order.errors.full_messages
         orders = list(self.db.orders.find())
         self.assertEqual(1, len(orders))
         self.assertEqual(2, len(orders[0]["order_lines"]))
 
         order.order_lines[0].quantity = 42
-        self.assertTrue(order.save())
+        assert order.save(), order.errors.full_messages
 
         orders = list(self.db.orders.find())
         lines = orders[0]["order_lines"]

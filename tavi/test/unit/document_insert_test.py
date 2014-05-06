@@ -84,14 +84,14 @@ class DocumentInsertTest(unittest.TestCase):
 
     def test_sets_created_at_if_present(self):
         self.sample.name = "John"
-        self.assertTrue(self.sample.save())
+        assert self.sample.save(), self.sample.errors.full_messages
         self.assertIsNotNone(self.sample.created_at)
 
     def test_sets_created_at_for_any_embedded_documents(self):
         address = Address(street="123 Elm St.")
         self.sample.name = "John"
         self.sample.address = address
-        self.assertTrue(self.sample.save())
+        assert self.sample.save(), self.sample.errors.full_messages
         self.assertIsNotNone(self.sample.address.created_at)
 
     def test_does_not_set_created_at_if_invalid(self):
