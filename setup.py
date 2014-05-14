@@ -24,7 +24,7 @@ test_requirements = [
 
 setup(
     name='Tavi',
-    version='1.2.0',
+    version='1.2.1',
     author='Bob Nadler Jr.',
     author_email='bnadlerjr@gmail.com',
     packages=[

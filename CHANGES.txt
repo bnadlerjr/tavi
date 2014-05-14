@@ -11,7 +11,8 @@ v1.0.0, 2013-12-17 -- Incompatible API Changes:
                         * Remove the concept of an EmbeddedField having an owner
                         * EmbeddedFields are set to None if no value is given
                         * Default value for EmbeddedFields are type checked.
-                        * Allow IntegerFields, FloatFields and BooleanFields to have None values if not required
+                        * Allow IntegerFields, FloatFields and BooleanFields
+                          to have None values if not required
                       
                       Backwards Compatible Changes:
                         * Documentation improvements
@@ -22,10 +23,12 @@ v1.0.0, 2013-12-17 -- Incompatible API Changes:
                         * Now embedded fields can have default values.
                       
                       Backwards Compatible Bug Fixes:
-                        * (Issue #33) The variable name of a field can be different from document field name
+                        * (Issue #33) The variable name of a field can be
+                          different from document field name
                         * (Issue #37) Add encoding to all source files
 v1.0.1, 2013-12-17 -- Backwards Compatible Bug Fixes:
-                        * Fix bug where ListFields were not loaded from MongoDB.
+                        * Fix bug where ListFields were not loaded from
+                          MongoDB.
 v1.0.2, 2014-02-11 -- Backwards Compatible Bug Fixes:
                         * (Issue #42) Include bson_id when serializing to JSON.
                         * (Issue #44) Required Fields with Default Values.
@@ -36,10 +39,14 @@ v.1.0.4, 2014-02-25 -- Forward Compatable Changes
                         * Test for Document#save "upsert"
                         * (Issue #49) Problems with boolean fields
 v.1.1.0, 2014-04-29 -- Forward Compatable Changes
-                        * Uses MongoReplicaSetClient if hostname includes "replicaSet"
+                        * Uses MongoReplicaSetClient if hostname includes
+                          "replicaSet"
                         * (Issue #51) Model level validations
                         * Add write concern option support for Document#save
                         * (Issue #48) StringFields and non-string values
                         * Various documentation fixes and test clarifications
 v.1.2.0, 2014-05-05 -- Forward Compatable Changes
                         * (Issue #3) Uniqueness Validation
+v.1.2.1, 2014-05-14 -- Backwards Compatiable Bug Fixes:
+                        * StringFields can now handle values with unicode
+                          characters that have been processed by a JSON parser.
