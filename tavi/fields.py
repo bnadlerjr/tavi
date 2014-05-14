@@ -167,10 +167,19 @@ class StringField(BaseField):
         self.regex = re.compile(pattern) if pattern else None
 
     def __set__(self, instance, unstripped_value):
-        value = str(unstripped_value).strip() if unstripped_value else None
+        if unstripped_value:
+            value = self._ensure_unicode_string(unstripped_value).strip()
+        else:
+            value = None
+
+        super(StringField, self).__set__(instance, value)
+
+    def _ensure_unicode_string(self, value):
+        if not isinstance(value, basestring):
+            value = str(value)
         if isinstance(value, str):
             value = unicode(value, "utf-8")
-        super(StringField, self).__set__(instance, value)
+        return value
 
     def validate(self, instance, value):
         """Validates the field."""

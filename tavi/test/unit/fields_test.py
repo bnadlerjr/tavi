@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from bson import ObjectId
+from bson.json_util import dumps, loads
 from datetime import datetime
 from tavi import fields
 from tavi.documents import Document, EmbeddedDocument
@@ -394,7 +395,21 @@ class StringFieldTest(unittest.TestCase):
 
         t = Target()
         my_string = "I sat down for coffee at the café"
-        t.f = str(my_string)
+        t.f = my_string
+        self.assertEqual(unicode(my_string, "utf-8"), t.f)
+
+    def test_handles_unicode_values_that_have_been_jsonified(self):
+        class Target(Document):
+            f = fields.StringField("my_field")
+            errors = Errors()
+
+        t = Target()
+        my_string = "I sat down for coffee at the café"
+
+        dumped = dumps(my_string)
+        loaded = loads(dumped)
+
+        t.f = loaded
         self.assertEqual(unicode(my_string, "utf-8"), t.f)
 
     def test_strips_whitespace_from_value(self):
