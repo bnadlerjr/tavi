@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+from unit import LogCapture
 from tavi.base.documents import BaseDocument
 from tavi.documents import EmbeddedDocument
 from tavi.fields import EmbeddedField, ListField, StringField
@@ -210,8 +211,12 @@ class BaseDocumentInitializationTest(unittest.TestCase):
         self.assertEqual("John", sample.name)
 
     def test_init_ignore_non_field_kwargs(self):
-        sample = self.Sample(name="John", not_a_field=True)
-        self.assertEqual("John", sample.name)
+        with LogCapture() as log:
+            sample = self.Sample(name="John", not_a_field=True)
+            self.assertEqual("John", sample.name)
+
+        msg = "Ignoring unknown field for Sample: 'not_a_field' = 'True'"
+        self.assertEqual([msg], log.messages["warning"])
 
     def test_init_with_kwargs_does_not_overwrite_attributes(self):
         class User(BaseDocument):

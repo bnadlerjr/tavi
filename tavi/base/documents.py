@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Provides base document support."""
 import collections
+import logging
 from bson.json_util import dumps, loads
 from tavi.errors import Errors
 from tavi.base.fields import BaseField
@@ -63,6 +64,10 @@ class BaseDocument(object):
         self._errors = Errors()
         for field in self.fields:
             set_field_attr(self, field, kwargs.get(field))
+        for k, v in kwargs.iteritems():
+            if k not in self.fields:
+                msg = "Ignoring unknown field for %s: %s = '%s'"
+                logging.warn(msg, self.__class__.__name__, repr(k), repr(v))
         self.changed_fields = set()
 
     @property
