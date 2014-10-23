@@ -38,15 +38,18 @@ v.1.0.3, 2014-02-24 -- Forward Compatable Changes
 v.1.0.4, 2014-02-25 -- Forward Compatable Changes
                         * Test for Document#save "upsert"
                         * (Issue #49) Problems with boolean fields
-v.1.1.0, 2014-04-29 -- Forward Compatable Changes
+v.1.1.0, 2014-04-29 -- Forward Compatible Changes
                         * Uses MongoReplicaSetClient if hostname includes
                           "replicaSet"
                         * (Issue #51) Model level validations
                         * Add write concern option support for Document#save
                         * (Issue #48) StringFields and non-string values
                         * Various documentation fixes and test clarifications
-v.1.2.0, 2014-05-05 -- Forward Compatable Changes
+v.1.2.0, 2014-05-05 -- Forward Compatible Changes
                         * (Issue #3) Uniqueness Validation
-v.1.2.1, 2014-05-14 -- Backwards Compatiable Bug Fixes:
+v.1.2.1, 2014-05-14 -- Backwards Compatible Bug Fixes:
                         * StringFields can now handle values with unicode
                           characters that have been processed by a JSON parser.
+v.1.2.2, 2014-10-23 -- Backwards Compatible Changes:
+                        * If a tavi.Document is initialized with unknown 
+                          kwargs, log them and their values.
