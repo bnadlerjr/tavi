@@ -51,13 +51,10 @@ class Document(BaseDocument):
     def __init__(self, **kwargs):
         self._id = kwargs.pop("_id", None)
         super(Document, self).__init__(**kwargs)
-        for k, v in self._field_descriptors.items():
-            if v.unique:
-                opts = {
-                    "name": "%s_unique_index" % k,
-                    "unique": True
-                }
-                self.__class__.collection.create_index(k, **opts)
+        unique_keys = [k for k, v in self._field_descriptors.items() if v.unique]
+        if len(unique_keys) > 0:
+            self.__class__.collection.create_index([(k, pymongo.ASCENDING) for k in unique_keys],
+                name="%s_unique_index" % "_".join(unique_keys)[:114], unique=True)
 
     @property
     def bson_id(self):

@@ -4,3 +4,4 @@ env
 MANIFEST
 Tavi.egg-info
 .coverage
+.idea
