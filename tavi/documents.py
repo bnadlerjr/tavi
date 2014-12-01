@@ -48,16 +48,26 @@ class Document(BaseDocument):
     """
     __metaclass__ = DocumentMetaClass
 
+    __MAX_NAMESPACE_SIZE__ = 127  # bytes
+    __UNIQUE_INDEX_SUFFIX__ = "_unique_index"
+
     def __init__(self, **kwargs):
         self._id = kwargs.pop("_id", None)
         super(Document, self).__init__(**kwargs)
-        for k, v in self._field_descriptors.items():
-            if v.unique:
-                opts = {
-                    "name": "%s_unique_index" % k,
-                    "unique": True
-                }
-                self.__class__.collection.create_index(k, **opts)
+        unique_keys = [
+            k for k, v in self._field_descriptors.items() if v.unique]
+
+        if len(unique_keys) > 0:
+            key_pairs = [(k, pymongo.ASCENDING) for k in unique_keys]
+            max_index_name_length = self.__MAX_NAMESPACE_SIZE__ - \
+                len(".$" + self.__class__.collection.full_name
+                    + self.__UNIQUE_INDEX_SUFFIX__)
+
+            name = "_".join(unique_keys)[:max_index_name_length] + \
+                self.__UNIQUE_INDEX_SUFFIX__
+
+            opts = {"name": name, "unique": True}
+            self.__class__.collection.create_index(key_pairs, **opts)
 
     @property
     def bson_id(self):

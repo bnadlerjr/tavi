@@ -13,6 +13,14 @@ class Address(EmbeddedDocument):
     last_modified_at = fields.DateTimeField("last_modified_at")
 
 
+class SampleWithCompoundUniqueKey(Document):
+    first_unique_fld = fields.StringField(
+        "first_unique_fld", required=True, unique=True)
+
+    second_unique_fld = fields.StringField(
+        "second_unique_fld", required=True, unique=True)
+
+
 class DocumentInsertTest(unittest.TestCase):
     class Sample(Document):
         name = fields.StringField("name", required=True, unique=True)
@@ -202,3 +210,37 @@ class DocumentInsertTest(unittest.TestCase):
             another_sample.errors.full_messages
         )
         self.assertIsNone(another_sample.created_at)
+
+    def test_compound_unique_fields_on_insert(self):
+        sample = SampleWithCompoundUniqueKey(
+            first_unique_fld="one", second_unique_fld="two")
+        assert sample.save(), sample.errors.full_messages
+
+        second_sample = SampleWithCompoundUniqueKey(
+            first_unique_fld="one", second_unique_fld="three")
+        assert second_sample.save(), second_sample.errors.full_messages
+
+        another_sample = SampleWithCompoundUniqueKey(
+            first_unique_fld="one", second_unique_fld="two")
+
+        self.assertFalse(another_sample.save())
+        self.assertEqual(
+            ["First Unique Fld Second Unique Fld must be unique"],
+            another_sample.errors.full_messages
+        )
+
+    def test_compound_unique_fields_with_long_names(self):
+        class SampleDocument(Document):
+            really_really_really_long_first_unique_field = fields.StringField(
+                "really_really_really_long_first_unique_field",
+                required=True, unique=True)
+
+            really_really_really_long_second_unique_field = fields.StringField(
+                "really_really_really_long_second_unique_field",
+                required=True, unique=True)
+
+        sample = SampleDocument(
+            really_really_really_long_first_unique_field="one",
+            really_really_really_long_second_unique_field="two")
+
+        self.assertTrue(sample.save(), sample.errors.full_messages)
