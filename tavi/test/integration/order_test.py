@@ -164,7 +164,7 @@ class OrderTest(BaseMongoTest):
             0,
             (lines[0]["created_at"] -
                 lines[0]["last_modified_at"]).total_seconds(),
-            delta=0.5
+            delta=1
         )
 
         self.assertEqual(3, lines[1]["quantity"])
@@ -175,7 +175,7 @@ class OrderTest(BaseMongoTest):
             0,
             (lines[1]["created_at"] -
                 lines[1]["last_modified_at"]).total_seconds(),
-            delta=0.5
+            delta=1
         )
 
     def test_query_order_lines(self):

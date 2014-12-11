@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Provides various field types."""
 import re
+import collections
 import datetime
 from bson import ObjectId
 from pymongo.errors import InvalidId
@@ -269,3 +270,79 @@ class ListField(BaseField):
 
     def __set__(self, instance, value):
         pass
+
+
+class ArrayField(BaseField):
+    """Represents an array field for a Mongo Document.
+
+    Supports all the validations in *BaseField* and the following:
+
+    length        -- validates the field value has an exact length; default is
+                     *None*
+
+    min_length    -- ensures field has a minimum number of items; default is
+                     *None*
+
+    max_length    -- ensures field is not more than a maximum number of
+                     items; default is *None*
+
+    validate_item -- a function which is run against each item in the field.
+                     Must accept the ArrayField instance, the Document
+                     instance, and the item as arguments.  Default is *None*
+    """
+    def __init__(
+        self, name,
+        length=None, min_length=None, max_length=None, pattern=None,
+        validate_item=None, **kwargs
+    ):
+        super(ArrayField, self).__init__(name, **kwargs)
+
+        self.length = length
+        self.min_length = min_length
+        self.max_length = max_length
+        if validate_item is not None and not callable(validate_item):
+            raise ValueError("validate_item must be callable or None")
+        self.validate_item= validate_item
+
+    def validate(self, instance, value):
+        """Validates the field."""
+        super(ArrayField, self).validate(instance, value)
+        if (value is not None and
+                not isinstance(value, collections.MutableSequence)):
+            instance.errors.add(self.name, "is not a list.")
+
+        val_length = len(value) if value else None
+
+        if self.required and not value:
+            instance.errors.add(self.name, "is required")
+
+        if self.length and self.length != val_length:
+            instance.errors.add(
+                self.name,
+                "is the wrong length (should be %s items)" % self.length
+            )
+
+        if self.min_length and val_length < self.min_length:
+            instance.errors.add(
+                self.name,
+                "is too short (minimum is %s items)" % self.min_length
+            )
+
+        if self.max_length and val_length > self.max_length:
+            instance.errors.add(
+                self.name,
+                "is too long (maximum is %s items)" % self.max_length
+            )
+
+        if self.validate_item and value is not None:
+            for item in value:
+                self.validate_item(self, instance, item)
+
+    def __get__(self, instance, owner):
+        if self.attribute_name not in instance.__dict__:
+            setattr(
+                instance,
+                self.attribute_name,
+                []
+            )
+        return getattr(instance, self.attribute_name) or []
