@@ -14,18 +14,23 @@ def get_field_attr(cls, field):
     """
     value = getattr(cls, field)
     if isinstance(value, BaseDocument):
-        return value.field_values
-    if isinstance(value, collections.MutableSequence):
-        return [v.field_values for v in value]
-    else:
-        return value
+        value = value.field_values
+    elif (isinstance(value, collections.MutableSequence) and
+            len(value) and isinstance(value[0], BaseDocument)):
+        value = [v.field_values for v in value]
+    if value == []:
+        value = None
+    return value
 
 
 def set_field_attr(cls, field, value):
     """Custom function for setting a tavi.field attribute."""
     field_descriptor = cls._field_descriptors[field]
 
-    if isinstance(value, collections.MutableSequence):
+    if value is not None and hasattr(field_descriptor, '_type'):
+        if not isinstance(value, collections.MutableSequence):
+            raise ValueError('ListField value must be a sequence.')
+
         for item in value:
             getattr(cls, field).append(field_descriptor._type(**item))
         return

@@ -735,3 +735,151 @@ class ListFieldTest(unittest.TestCase):
         order = Order()
         order.f = Other()
         self.assertEqual(fields.EmbeddedList, order.f.__class__)
+
+
+class ArrayFieldTest(unittest.TestCase):
+    def setUp(self):
+        super(ArrayFieldTest, self).setUp()
+        self.field = fields.ArrayField("my_field")
+
+    def test_sets_default_as_empty_list(self):
+        class Target(Document):
+            f = fields.ArrayField("my_field")
+            errors = Errors()
+
+        t = Target()
+        self.assertEqual([], t.f)
+
+    def test_cannot_set_to_non_list(self):
+        class Target(Document):
+            f = fields.ArrayField("my_field")
+            errors = Errors()
+
+        t = Target()
+        t.f = 'Not a list'
+        self.assertEqual(
+            ["My Field is not a list."],
+            t.errors.full_messages
+        )
+
+    def test_allows_none_value_if_not_required(self):
+        class Target(Document):
+            f = fields.ArrayField("my_field")
+            errors = Errors()
+
+        t = Target()
+        t.f = None
+        self.assertEqual(0, t.errors.count, t.errors.full_messages)
+
+    def test_sets_default_min_length(self):
+        self.assertEqual(None, self.field.min_length)
+
+    def test_validates_min_length(self):
+        class Target(Document):
+            f = fields.ArrayField("my_field", min_length=10)
+            errors = Errors()
+
+        t = Target()
+        t.f = ["Not ten"]
+        self.assertEqual(
+            ["My Field is too short (minimum is 10 items)"],
+            t.errors.full_messages
+        )
+
+    def test_sets_default_max_length(self):
+        self.assertEqual(None, self.field.max_length)
+
+    def test_validates_max_length(self):
+        class Target(Document):
+            f = fields.ArrayField("my_field", max_length=10)
+            errors = Errors()
+
+        t = Target()
+        t.f = [1] * 11
+        self.assertEqual(
+            ["My Field is too long (maximum is 10 items)"],
+            t.errors.full_messages
+        )
+
+    def test_sets_default_exact_length(self):
+        self.assertEqual(None, self.field.length)
+
+    def test_validates_exact_length(self):
+        class Target(Document):
+            f = fields.ArrayField("my_field", length=4)
+            errors = Errors()
+
+        t = Target()
+        t.f = [1] * 5
+        self.assertEqual(
+            ["My Field is the wrong length (should be 4 items)"],
+            t.errors.full_messages
+        )
+
+        t.f = [1]
+        self.assertEqual(
+            ["My Field is the wrong length (should be 4 items)"],
+            t.errors.full_messages
+        )
+
+        t.f = [1] * 4
+        self.assertEqual(0, t.errors.count)
+
+    def test_validates_base_errors(self):
+        class Target(Document):
+            f = fields.ArrayField("my_field", required=True, min_length=10)
+            errors = Errors()
+
+        t = Target()
+        t.f = None
+        self.assertEqual({
+            "My Field is too short (minimum is 10 items)",
+            "My Field is required",
+            },
+            set(t.errors.full_messages)
+        )
+
+    def test_handles_empty_arrays_for_required_validation(self):
+        class Target(Document):
+            f = fields.ArrayField("my_field", required=True, min_length=10)
+            errors = Errors()
+
+        t = Target()
+
+        t.f = []
+        self.assertEqual([
+            "My Field is required",
+            "My Field is too short (minimum is 10 items)"],
+            t.errors.full_messages
+        )
+
+    def test_handles_empty_strings_if_not_required(self):
+        class Target(Document):
+            f = fields.ArrayField("my_field")
+            errors = Errors()
+
+        t = Target()
+
+        t.f = []
+        self.assertEqual(0, t.errors.count, t.errors.full_messages)
+
+    def test_bad_validate_function(self):
+        self.assertRaises(ValueError,
+                          fields.ArrayField, "field", validate_item="wat")
+
+    def test_runs_validate_function(self):
+        def validate(field, document, item):
+            if item != 42:
+                document.errors.add(field.name, 'is not the answer')
+
+        class Target(Document):
+            f = fields.ArrayField("violence", validate_item=validate)
+            errors = Errors()
+
+        t = Target()
+
+        t.f = [1]
+        self.assertEqual(
+            ["Violence is not the answer"],
+            t.errors.full_messages
+        )
