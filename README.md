@@ -217,6 +217,27 @@ If you need to add your own field types you may inherit from either ``tavi.base.
             # Your validation logic goes here...
 ```
 
+#### Array Fields
+
+`tavi.fields.ArrayFields` are used for fields where the value must be a list of
+primitive items (numbers, strings, etc., as opposed to embedded documents).
+
+```python
+import tavi
+
+def validate(field, document, item):
+    if not isinstance(item, basestring):
+        document.errors.add(field.name, "values must be strings")
+
+class MontyPython(Document):
+    names = tavi.fields.ArrayField("names", validate_item=validate)
+
+p = MontyPython()
+p.names = ["Graham Chapman", "Eric Idle", "John Cleese", "Michael Palin",
+           "Terry Jones"]
+p.names.append("Terry Gilliam")
+```
+
 #### Embedded Fields
 
 `tavi.fields.EmbeddedField`'s are how embedded documents are placed in documents. For example, let's say we have defined an embedded document for an address.

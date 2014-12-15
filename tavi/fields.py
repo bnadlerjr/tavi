@@ -302,7 +302,7 @@ class ArrayField(BaseField):
         self.max_length = max_length
         if validate_item is not None and not callable(validate_item):
             raise ValueError("validate_item must be callable or None")
-        self.validate_item= validate_item
+        self.validate_item = validate_item
 
     def validate(self, instance, value):
         """Validates the field."""
