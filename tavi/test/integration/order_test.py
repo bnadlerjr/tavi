@@ -24,6 +24,7 @@ class Order(Document):
     email = fields.StringField("email")
     pay_type = fields.StringField("pay_type")
     order_lines = fields.ListField("order_lines", OrderLine)
+    discount_codes = fields.ArrayField("discount_codes")
 
 
 class OrderTest(BaseMongoTest):
@@ -237,3 +238,42 @@ class OrderTest(BaseMongoTest):
             lines[1]["created_at"],
             lines[1]["last_modified_at"]
         )
+
+    def test_query_discount_codes(self):
+        order = Order(
+            name="John Doe",
+            email="jdoe@example.com",
+            pay_type="Mastercard",
+            discount_codes=["HelloInternet"],
+        )
+
+        assert order.save(), order.errors.full_messages
+
+        db_orders = Order.find_all()
+        self.assertEqual(1, len(db_orders))
+
+        db_codes = db_orders[0].discount_codes
+        self.assertEqual(db_codes[0], "HelloInternet")
+
+    def test_update_discount_codes(self):
+        order = Order(
+            name="John Doe",
+            email="jdoe@example.com",
+            pay_type="Mastercard",
+            discount_codes=["HelloInternet", "rosebud"],
+        )
+
+        assert order.save(), order.errors.full_messages
+
+        orders = list(self.db.orders.find())
+        self.assertEqual(1, len(orders))
+        self.assertEqual(2, len(orders[0]["discount_codes"]))
+
+        order.discount_codes[1] = "weaknesspays"
+        assert order.save(), order.errors.full_messages
+
+        orders = list(self.db.orders.find())
+        codes = orders[0]["discount_codes"]
+        self.assertEqual(1, len(orders))
+        self.assertEqual(2, len(codes))
+        self.assertEqual("weaknesspays", codes[1])
