@@ -6,6 +6,8 @@ from bson.json_util import dumps, loads
 from tavi.errors import Errors
 from tavi.base.fields import BaseField
 
+logger = logging.getLogger(__name__)
+
 
 def get_field_attr(cls, field):
     """Custom function for retrieving a tavi.field attribute. Handles nested
@@ -72,7 +74,7 @@ class BaseDocument(object):
         for k, v in kwargs.iteritems():
             if k not in self.fields:
                 msg = "Ignoring unknown field for %s: %s = '%s'"
-                logging.warn(msg, self.__class__.__name__, repr(k), repr(v))
+                logger.debug(msg, self.__class__.__name__, repr(k), repr(v))
         self.changed_fields = set()
 
     @property
