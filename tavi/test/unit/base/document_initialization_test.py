@@ -28,7 +28,7 @@ class BaseDocumentInitializationTest(unittest.TestCase):
             self.assertEqual("John", sample.name)
 
         msg = "Ignoring unknown field for Sample: 'not_a_field' = 'True'"
-        self.assertEqual([msg], log.messages["warning"])
+        self.assertEqual([msg], log.messages["debug"])
 
     def test_init_with_kwargs_does_not_overwrite_attributes(self):
         class User(BaseDocument):
