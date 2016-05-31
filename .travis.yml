@@ -2,12 +2,17 @@ language: python
 python:
   - "2.7"
 before_install:
-  - "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10"
-  - "echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list"
-  - "sudo apt-get update"
-  - "sudo apt-get install mongodb-org-server"
+  - ./install_mongo.sh
 install: pip install -r requirements.txt
 before_script:
   - "flake8 tavi"
   - "until nc -z localhost 27017; do echo Waiting for MongoDB; sleep 1; done"
 script:  python setup.py nosetests
+env:
+  - "PYMONGO_VERSION='== 2.4.1' MONGO_VERSION=2.6.12"
+  - "PYMONGO_VERSION='>= 2.8.0, < 3.0.0' MONGO_VERSION=2.6.12"
+  - "PYMONGO_VERSION='>= 2.8.0, < 3.0.0' MONGO_VERSION=3.0.11"
+  - "PYMONGO_VERSION='>= 3.2.0, < 4.0.0' MONGO_VERSION=2.6.12"
+  - "PYMONGO_VERSION='>= 3.2.0, < 4.0.0' MONGO_VERSION=3.0.11"
+  - "PYMONGO_VERSION='>= 3.2.0, < 4.0.0' MONGO_VERSION=3.2.6"
+sudo: required

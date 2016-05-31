@@ -60,8 +60,8 @@ class Document(BaseDocument):
         if len(unique_keys) > 0:
             key_pairs = [(k, pymongo.ASCENDING) for k in unique_keys]
             max_index_name_length = self.__MAX_NAMESPACE_SIZE__ - \
-                len(".$" + self.__class__.collection.full_name
-                    + self.__UNIQUE_INDEX_SUFFIX__)
+                len(".$" + self.__class__.collection.full_name +
+                    self.__UNIQUE_INDEX_SUFFIX__)
 
             name = "_".join(unique_keys)[:max_index_name_length] + \
                 self.__UNIQUE_INDEX_SUFFIX__

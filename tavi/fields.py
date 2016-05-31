@@ -32,7 +32,7 @@ class DateTimeField(BaseField):
         """Validates the field."""
         super(DateTimeField, self).validate(instance, value)
 
-        if None != value and not isinstance(value, datetime.datetime):
+        if value is not None and not isinstance(value, datetime.datetime):
             instance.errors.add(self.name, "must be a valid date and time")
 
 
@@ -48,27 +48,27 @@ class FloatField(BaseField):
     def __init__(self, name, min_value=None, max_value=None, **kwargs):
         super(FloatField, self).__init__(name, **kwargs)
 
-        self.min_value = None if None == min_value else float(min_value)
-        self.max_value = None if None == max_value else float(max_value)
+        self.min_value = None if min_value is None else float(min_value)
+        self.max_value = None if max_value is None else float(max_value)
 
     def validate(self, instance, value):
         """Validates the field."""
         super(FloatField, self).validate(instance, value)
 
-        if None != value:
+        if value is not None:
             if isinstance(value, int):
                 value = float(value)
 
             if not isinstance(value, float):
                 instance.errors.add(self.name, "must be a float")
 
-            if not None == self.min_value and value < self.min_value:
+            if self.min_value is not None and value < self.min_value:
                 instance.errors.add(
                     self.name,
                     "is too small (minimum is %s)" % self.min_value
                 )
 
-            if not None == self.max_value and value > self.max_value:
+            if self.max_value is not None and value > self.max_value:
                 instance.errors.add(
                     self.name,
                     "is too big (maximum is %s)" % self.max_value
@@ -87,24 +87,24 @@ class IntegerField(BaseField):
     def __init__(self, name, min_value=None, max_value=None, **kwargs):
         super(IntegerField, self).__init__(name, **kwargs)
 
-        self.min_value = None if None == min_value else int(min_value)
-        self.max_value = None if None == max_value else int(max_value)
+        self.min_value = None if min_value is None else int(min_value)
+        self.max_value = None if max_value is None else int(max_value)
 
     def validate(self, instance, value):
         """Validates the field."""
         super(IntegerField, self).validate(instance, value)
 
-        if None != value:
+        if value is not None:
             if not isinstance(value, int):
                 instance.errors.add(self.name, "must be a integer")
 
-            if not None == self.min_value and value < self.min_value:
+            if self.min_value is not None and value < self.min_value:
                 instance.errors.add(
                     self.name,
                     "is too small (minimum is %s)" % self.min_value
                 )
 
-            if not None == self.max_value and value > self.max_value:
+            if self.max_value is not None and value > self.max_value:
                 instance.errors.add(
                     self.name,
                     "is too big (maximum is %s)" % self.max_value

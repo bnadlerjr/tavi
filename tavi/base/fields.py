@@ -39,7 +39,7 @@ class BaseField(object):
         return getattr(instance, self.attribute_name)
 
     def __set__(self, instance, value):
-        if None == value and self.required and self.default:
+        if value is None and self.required and self.default:
             value = self.default
         self.validate(instance, value)
         setattr(instance, self.attribute_name, value)
@@ -55,7 +55,7 @@ class BaseField(object):
 
         """
         instance.errors.clear(self.name)
-        if self.required and None == value:
+        if self.required and value is None:
             instance.errors.add(self.name, "is required")
 
         if self.choices and value not in self.choices:
