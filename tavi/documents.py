@@ -198,14 +198,7 @@ class Document(BaseDocument):
                 operation.reset_fields()
 
                 if isinstance(e, pymongo.errors.DuplicateKeyError):
-                    logger.warn(
-                        "%s %s failed due to unique index violation (%s)",
-                        self.__class__.__name__,
-                        operation.name,
-                        e.message
-                    )
-                    f = re.search(r'\$(.+)_unique_index', e.message).group(1)
-                    self.errors.add(f, "must be unique")
+                    self.parse_duplicate_key_error(operation, e)
                     return False
                 raise
 
@@ -220,6 +213,25 @@ class Document(BaseDocument):
             self._id
         )
         return True
+
+    def parse_duplicate_key_error(self, operation, error):
+        logger.warn(
+            "%s %s failed due to unique index violation (%s)",
+            self.__class__.__name__,
+            operation.name,
+            error.message
+        )
+
+        index_rex = r'\$(.+){SUFFIX}'.format(
+            SUFFIX=self.__UNIQUE_INDEX_SUFFIX__
+        )
+        if "collection:" in error.message:
+            index_rex = r'index: (.+){SUFFIX}'.format(
+                SUFFIX=self.__UNIQUE_INDEX_SUFFIX__
+            )
+
+        f = re.search(index_rex, error.message).group(1)
+        self.errors.add(f, "must be unique")
 
 
 class EmbeddedDocument(BaseDocument):
