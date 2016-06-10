@@ -1,5 +1,6 @@
 # I prefer Markdown to reStructuredText. PyPi does not. This allows people to
 # install and not get any errors.
+import os
 try:
     import pypandoc
     long_description = pypandoc.convert('README.md', 'rst')
@@ -40,7 +41,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "inflection >= 0.2.0",
-        "pymongo >= 2.4.1"
+        "pymongo {PYMONGO_VERSION}".format(PYMONGO_VERSION=os.getenv("PYMONGO_VERSION", ">= 2.4.1"))
     ] + test_requirements,
     tests_require=test_requirements,
     test_suite="nose_collector"

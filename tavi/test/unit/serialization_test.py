@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 import datetime
+import json
 from tavi import fields
 from tavi.documents import Document
 
@@ -20,17 +21,15 @@ class SerializationTest(unittest.TestCase):
             sold_on=datetime.datetime(2013, 8, 25, 22, 24, 0)
         )
 
-        expected = (
-            '{'
-            '"id": null, '
-            '"sold_on": {"$date": 1377469440000}, '
-            '"price": 9.99, '
-            '"name": "Widget", '
-            '"quantity": 3'
-            '}'
-        )
+        expected = {
+            "id": None,
+            "sold_on": {"$date": 1377469440000},
+            "price": 9.99,
+            "name": "Widget",
+            "quantity": 3
+        }
 
-        self.assertEqual(expected, t.to_json())
+        self.assertDictEqual(expected, json.loads(t.to_json()))
 
     def test_serialize_only_specified_fields_to_json(self):
         t = self.Target(
@@ -40,18 +39,18 @@ class SerializationTest(unittest.TestCase):
             sold_on=datetime.datetime(2013, 8, 25, 22, 24, 0)
         )
 
-        expected = (
-            '{'
-            '"id": null, '
-            '"price": 9.99, '
-            '"name": "Widget", '
-            '"quantity": 3'
-            '}'
-        )
+        expected = {
+            "id": None,
+            "price": 9.99,
+            "name": "Widget",
+            "quantity": 3
+        }
 
-        self.assertEqual(
+        actual = t.to_json(fields=['bson_id', 'name', 'price', 'quantity'])
+
+        self.assertDictEqual(
             expected,
-            t.to_json(fields=['bson_id', 'name', 'price', 'quantity'])
+            json.loads(actual)
         )
 
     def test_deserialize_from_json(self):
